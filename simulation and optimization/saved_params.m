@@ -10,7 +10,6 @@ switch char(fixed_params.location)
                 param.t_trans = [99.998, 12.315, 96.6621, 28.4856, 35.3839, 100];
                 param.d2 = [1.00351];
                 
-                fixed_params.M = [225, 27, 1/40, 80];
                 fixed_params.Mmax = 130;
                 fixed_params.Mg = 15;
 
@@ -39,7 +38,6 @@ switch char(fixed_params.location)
                 param.t_trans = [63.9735, 99.2866, 49.9735, 26.2265, 83.8494];
                 param.d2 = [0.526345];
                 
-                fixed_params.M = [5,3,1/60,170];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 10;
                 fixed_params.vdate = datetime(["October 14, 2020","December 13, 2020","April 14, 2021"]);
@@ -64,7 +62,6 @@ switch char(fixed_params.location)
                 param.t_trans = [75.5788, 98.4836, 53.2145, 29.0432, 92.0192, 12.8243];
                 param.d2 = [0.0573392];
                 
-                fixed_params.M = [4,1.2,1/50,120];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 5;
                 fixed_params.vdate = datetime(["November 3, 2020","November 27, 2020","March 15, 2021"]);
@@ -87,7 +84,6 @@ switch char(fixed_params.location)
                 param.t_trans = [26.9674, 81.3655, 30.2808, 87.4284, 98.761];
                 param.d2 = [0.0265504];
                 
-                fixed_params.M = [5,3.5,1/40,55];
                 fixed_params.Mmax = 130;
                 fixed_params.Mg = 1;
                 fixed_params.vdate = datetime(["December 5, 2020","December 7, 2020","May 11, 2021"]);
@@ -110,7 +106,6 @@ switch char(fixed_params.location)
                 param.t_trans = [69.8812, 35.7662, 63.3059, 78.057, 74.1703, 85.3549, 30.3295, 54.1859];
                 param.d2 = [0.34508];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 5;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
@@ -139,7 +134,6 @@ switch char(fixed_params.location)
                 param.t_trans = [28.0269 30.6100 32.1123 37.7279 72.7676 80.6629 42.5569 42.8702];
                 param.d2 = [0.3282];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 20;
                 fixed_params.Mg = 3;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
@@ -164,7 +158,6 @@ switch char(fixed_params.location)
                 param.t_trans = [14.3542 56.8288 59.1253 50.5002 49.5630 30.1260 43.7560 14.6776 27.9043];
                 param.d2 = [0.1798];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 20;
                 fixed_params.Mg = 1;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
@@ -188,7 +181,6 @@ switch char(fixed_params.location)
                 param.t_trans = [99.9999 43.7968 58.4621 50.1765 81.6247];
                 param.d2 = [0.4638];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 5;
                 fixed_params.vdate = datetime(["September 9, 2020","November 6, 2020","March 17, 2021"]);

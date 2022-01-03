@@ -4,17 +4,17 @@ tic
 addpath('helper functions','source data',...
     'plotting functions','simulation and optimization')
 
-JHU_data = 'global covid cases nov2.xlsx';
+JHU_data = 'global covid cases jan1.xlsx';
 pop_file = 'global population data.xlsx';
-vacc_file = 'vaccinations nov2.xlsx';
-test_file = 'daily_tests data nov2.xlsx';
-variant_file = 'gisaid_variants nov2.xlsx';
+vacc_file = 'vaccinations jan1.xlsx';
+test_file = 'daily_tests data jan1.xlsx';
+variant_file = 'gisaid_variants jan1.xlsx';
 
 % Set default plot settings
 fixed_params = set_plot_defaults();
 
 %% Set Simulation Options
-fixed_params.optimize_params = 1;
+fixed_params.optimize_params = 0;
 fixed_params.append_params = 0;
 fixed_params.append_refit_params = 0;
 fixed_params.plot_optim = 1;
@@ -22,14 +22,14 @@ fixed_params.calc_variants = 1;
 
 % set display options
 disp_opts.print_params = 1; disp_opts.fname="";
-disp_opts.SVEIRD_plot = 0;
+disp_opts.SVEIRD_plot = 1;
 disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
-disp_opts.combined_beta = 0;
-disp_opts.combined_d1 = 0;
+disp_opts.combined_beta = 1;
+disp_opts.combined_d1 = 1;
 disp_opts.combined_cases = 0;
-disp_opts.combined_M = 0;
-disp_opts.combined_alpha = 0;
-disp_opts.variant_plot = 0; % variant proportions over time
+disp_opts.combined_M = 1;
+disp_opts.combined_alpha = 1;
+disp_opts.variant_plot = 1; % variant proportions over time
 
 disp_opts.bgvar_sensitivity = 0;
 disp_opts.beta_gamma_sensitivity = 0;
@@ -76,8 +76,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-fn = {'ZA'};
-% fn = {'US','IN','DE','BR','JP','ZA'};
+% fn = {'US'};
+fn = {'US','IN','DE','BR','JP','ZA'};
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
