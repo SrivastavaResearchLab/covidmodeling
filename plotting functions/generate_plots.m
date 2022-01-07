@@ -65,7 +65,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             VS2.*(b.*(1-VESV).*dbeta.*Iv);
         new_cases = new_cases .* N;
         new_casesv = new_casesv .* N;
-        [alpha1,alpha2] = calc_alpha(fixed_params,dt_daily);
+        [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dt_daily);
 
         S = S.*N; V1 = V1.*N; V2 = V2.*N; R = R.*N; D = D.*N;
         I = I.*N; VR1 = VR1.*N; VR2 = VR2.*N; VS2 = VS2.*N; Iv = Iv.*N;
@@ -233,11 +233,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
     if disp_opts.combined_alpha || disp_opts.all_figs
         figure(disp_opts.combined_alpha_fig);
-        subplot(2,1,1); hold on;
+        subplot(3,1,1); hold on;
         plot(dt_daily,100*alpha1,'DisplayName',loc_name,'Color',country_color)
         axis tight;
         
-        ylabel('$\alpha_1$ (1/day)',...
+        ylabel('$\alpha_1$',...
             'interpreter','latex','FontSize',45)
 %         yl = ylim; ylim([0 yl(2)]);
         ylim([0 1.5]);
@@ -247,12 +247,12 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax.LineStyleOrderIndex = ax.ColorOrderIndex;
         ax.FontSize = 45;
         
-        
-        subplot(2,1,2); hold on
+
+        subplot(3,1,2); hold on
         plot(dt_daily,100*alpha2,'DisplayName',loc_name,'Color',country_color)
         axis tight;
         
-        ylabel('$\alpha_2$ (1/day)',...
+        ylabel('$\alpha_2$',...
             'interpreter','latex','FontSize',45)
 %         yl = ylim; ylim([0 yl(2)]);
         ylim([0 1.5]);
@@ -261,6 +261,19 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax.LineStyleOrderIndex = ax.ColorOrderIndex;
         ax.FontSize = 45;
         
+
+        subplot(3,1,3); hold on
+        plot(dt_daily,100*alphaB,'DisplayName',loc_name,'Color',country_color)
+        axis tight;
+        
+        ylabel('$\alpha_B$',...
+            'interpreter','latex','FontSize',45)
+%         yl = ylim; ylim([0 yl(2)]);
+        ylim([0 1.5]);
+        xl = xlim; xlim([datetime('December 1, 2020') xl(2)]);
+        ax = gca; ax.YRuler.Exponent = 0; ytickformat('percentage');
+        ax.LineStyleOrderIndex = ax.ColorOrderIndex;
+        ax.FontSize = 45;
         
         if disp_opts.save_figs
             saveas(disp_opts.combined_alpha_fig,"./png/combined_alpha.png")

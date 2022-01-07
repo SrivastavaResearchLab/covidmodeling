@@ -1,4 +1,4 @@
-function vacc_data = get_vacc_data(region, vacc_data)
+function data_out = get_vacc_data(region, vacc_data)
     vacc_data = readtable(vacc_data);
     
     selected = ismember(string(table2array(vacc_data(:,1))),region);
@@ -11,6 +11,7 @@ function vacc_data = get_vacc_data(region, vacc_data)
     
     people_fully_vaccinated = vacc_data.people_fully_vaccinated;
     people_vaccinated = vacc_data.people_vaccinated;
+    total_boosters = vacc_data.total_boosters;
     
     % interpolate and smooth vaccination data (fully vaccinated)
     nanx = isnan(people_fully_vaccinated);
@@ -29,7 +30,16 @@ function vacc_data = get_vacc_data(region, vacc_data)
     people_vaccinated(nanx) = ...
         interp1(t(~nanx), people_vaccinated(~nanx), t(nanx));
     people_vaccinated = movmean(people_vaccinated,7);
+
+    % interpolate and smooth vaccination data (booster)
+    nanx = isnan(total_boosters);
+    t=1:numel(total_boosters);
+    total_boosters(nanx) = ...
+        interp1(t(~nanx), total_boosters(~nanx), t(nanx));
+    total_boosters = movmean(total_boosters,7);
     
-    vacc_data.people_fully_vaccinated = people_fully_vaccinated;
-    vacc_data.people_vaccinated = people_vaccinated;
+    data_out.date = vacc_data.date;
+    data_out.people_fully_vaccinated = people_fully_vaccinated;
+    data_out.people_vaccinated = people_vaccinated;
+    data_out.total_boosters = total_boosters;
 end

@@ -22,14 +22,14 @@ fixed_params.calc_variants = 1;
 
 % set display options
 disp_opts.print_params = 1; disp_opts.fname="";
-disp_opts.SVEIRD_plot = 1;
+disp_opts.SVEIRD_plot = 0;
 disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
-disp_opts.combined_beta = 1;
-disp_opts.combined_d1 = 1;
+disp_opts.combined_beta = 0;
+disp_opts.combined_d1 = 0;
 disp_opts.combined_cases = 0;
-disp_opts.combined_M = 1;
+disp_opts.combined_M = 0;
 disp_opts.combined_alpha = 1;
-disp_opts.variant_plot = 1; % variant proportions over time
+disp_opts.variant_plot = 0; % variant proportions over time
 
 disp_opts.bgvar_sensitivity = 0;
 disp_opts.beta_gamma_sensitivity = 0;
@@ -76,8 +76,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-% fn = {'US'};
-fn = {'US','IN','DE','BR','JP','ZA'};
+fn = {'US'};
+% fn = {'US','IN','DE','BR','JP','ZA'};
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
