@@ -5,18 +5,14 @@ frac_alpha1 = sens_vars.frac_alpha1;
 frac_alpha2 = sens_vars.frac_alpha2;
 frac_alphaB = sens_vars.frac_alphaB;
 
-% DONT ALLOW S OR V1 TO GO BELOW ZERO FOR FUTURE PREDICTIONS
+% DONT ALLOW S OR V1 TO GO BELOW ZERO FOR FUTURE PREDICTIONS (CHECK PLOTS)
 vacc_data = fixed_params.vacc_data;
 alpha_transition = fixed_params.alpha_transition;
 
-people_fully_vaccinated = [0 ; vacc_data.people_fully_vaccinated];
-people_vaccinated = [0 ; vacc_data.people_vaccinated];
-total_boosters = [0 ; vacc_data.total_boosters];
 date_list = vacc_data.date;
-
-alpha1_reported = diff(people_vaccinated);
-alpha2_reported = diff(people_fully_vaccinated);
-alphaB_reported = diff(total_boosters);
+alpha1_reported = vacc_data.alpha1_reported;
+alpha2_reported = vacc_data.alpha2_reported;
+alphaB_reported = vacc_data.alphaB_reported;
 
 alpha1 = zeros(size(dates));
 alpha2 = zeros(size(dates));

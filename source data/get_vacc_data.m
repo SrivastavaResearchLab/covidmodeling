@@ -37,9 +37,17 @@ function data_out = get_vacc_data(region, vacc_data)
     total_boosters(nanx) = ...
         interp1(t(~nanx), total_boosters(~nanx), t(nanx));
     total_boosters = movmean(total_boosters,7);
-    
+
+    people_fully_vaccinated = [0 ; people_fully_vaccinated];
+    people_vaccinated = [0 ; people_vaccinated];
+    total_boosters = [0 ; total_boosters];
+
+    alpha1_reported = diff(people_vaccinated);
+    alpha2_reported = diff(people_fully_vaccinated);
+    alphaB_reported = diff(total_boosters);
+
     data_out.date = vacc_data.date;
-    data_out.people_fully_vaccinated = people_fully_vaccinated;
-    data_out.people_vaccinated = people_vaccinated;
-    data_out.total_boosters = total_boosters;
+    data_out.alpha1_reported = alpha1_reported;
+    data_out.alpha2_reported = alpha2_reported;
+    data_out.alphaB_reported = alphaB_reported;
 end
