@@ -15,8 +15,8 @@ start_inf = max(1,start_day-round(1/param.gamma(1)));
 I0 = M*sum(fixed_params.US_data.average(start_inf:start_day))/N;
 R0 = M*sum(fixed_params.US_data.average(1:start_inf))/N;
 S0 = 1 - I0 - R0;
-ymat = zeros(5,4+n_vars);
-nS = 1; nR = 2; nD = 3; nI = 4; nIv = 5:(5+n_vars-1);
+ymat = zeros(5,5+n_vars);
+nS = 1; nR = 2; nRW = 3; nD = 4; nI = 5; nIv = 6:(6+n_vars-1);
 nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 ymat(nUV,nS) = S0; ymat(nUV,nR) = R0; ymat(nUV,nI) = I0; t = 0; % initial conditions
 

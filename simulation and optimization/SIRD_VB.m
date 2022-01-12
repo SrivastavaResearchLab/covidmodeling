@@ -6,13 +6,13 @@ n_var = length(fixed_params.dbeta);
 % reshape compartment array into matrix
 y = reshape(y,[5,numel(y)/5]);
 
-nS = 1; nR = 2; nD = 3; nI = 4:(4+n_var);
+nS = 1; nR = 2; nRW = 3; nD = 4; nI = 5:(5+n_var);
 nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
 % set vaccination to zero if compartment is below this threshold
 vacc_threshold = 1e-6;
 
-V_total = sum(y([nV1 nV2 nVS1 nVS2],[nS nR nI]),'all');
+V_total = sum(y([nV1 nV2 nVS1 nVS2],[nS nR nRW nI]),'all');
 I_total = sum(y(:,nI),'all');
 b = calc_beta(V_total, I_total, param);
 
@@ -41,7 +41,7 @@ propS2 = sum(y(nVS2,:))/(sum(y(nVS2,:)) + sum(y(nV2,:)));
 propV1 = 1 - propS1;
 propV2 = 1 - propS2;
 
-% replace NaN with 1,0 (in case of 0/0=NaN)
+% set propS1,propV1 with 1,0 (in case of 0/0=NaN)
 if isnan(propS1)
     propS1 = 1; propV1 = 0;
 end
@@ -79,13 +79,14 @@ mu = [mu mu_var];
 
 dydt = zeros(size(y));
 for nimm = [nUV nV1 nV2 nVS1 nVS2] %(1:5)
-    S = y(nimm,nS); I = y(nimm,nI); R = y(nimm,nR); D = y(nimm,nD);
+    S = y(nimm,nS); I = y(nimm,nI); R = y(nimm,nR); RW = y(nimm,nRW); D = y(nimm,nD);
     ve = VE(nimm,:);
     
     % differential equations
     dydt(nimm,nS) = -S*sum((1-ve).*b.*I) + net_flow(nimm,nS);
     dydt(nimm,nI) = (S.*b.*(1-ve) - mu.*gamma - gamma).*I + net_flow(nimm,nI);
-    dydt(nimm,nR) = sum(gamma.*I) + net_flow(nimm,nR);
+    dydt(nimm,nR) = sum(gamma.*I) - R/t_imm + net_flow(nimm,nR);
+    dydt(nimm,nRW) = R/t_imm + net_flow(nimm,nRW);
     dydt(nimm,nD) = sum(mu.*gamma.*I) + net_flow(nimm,nD);
 end
 

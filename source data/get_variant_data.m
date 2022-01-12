@@ -28,7 +28,9 @@ function fixed_params = get_variant_data(var_data, fixed_params)
             % interpolate values where no data was collected
             nanx = isnan(v_data);
             t=1:numel(v_data);
-            v_data(nanx) = interp1(t(~nanx), v_data(~nanx), t(nanx));
+            if sum(~nanx) > 2
+                v_data(nanx) = interp1(t(~nanx), v_data(~nanx), t(nanx));
+            end
             
             % replace first section of missing data with 0 (no variant)
             nanx = isnan(v_data);

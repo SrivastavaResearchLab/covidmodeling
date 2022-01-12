@@ -35,18 +35,18 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         y = reshape(y,[size(y,1),5,size(y,2)/5]);
         
         % recover compartments: y(immunity #, compartment #)
-        nS = 1; nR = 2; nD = 3; nI = 4:(4+n_var);
+        nS = 1; nR = 2; nRW = 3; nD = 4; nI = 5:(5+n_var);
         nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
         S = y(:,nUV,nS); V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
         R = y(:,nUV,nR); VR1 = y(:,nV1,nR); VR2 = y(:,nV2,nR);
-        D = sum(y(:,:,nD),2);
+        RW = y(:,nUV,nRW); D = sum(y(:,:,nD),2);
         I = squeeze(sum(y(:,:,nI(1)),2));
         Iv = squeeze(sum(y(:,:,nI(2:end)),2));
-        VS1 = y(:,nVS1,nS); VSR1 = y(:,nVS1,nR);
-        VS2 = y(:,nVS2,nS); VSR2 = y(:,nVS2,nR);
+        VS1 = y(:,nVS1,nS); VSR1 = sum(y(:,nVS1,[nR nRW]),3);
+        VS2 = y(:,nVS2,nS); VSR2 = sum(y(:,nVS2,[nR nRW]),3);
 
-        V = sum(y(:,[nV1 nV2 nVS1 nVS2],[nS nI nR]),[2 3]);
+        V = sum(y(:,[nV1 nV2 nVS1 nVS2],[nS nI nR nRW]),[2 3]);
 
         % convert t to datetime in same timeframe
         dt = datetime(datestr(datenum(US_data.date(start_day))+t));
@@ -71,7 +71,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         new_casesv = new_casesv .* N;
         [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dt_daily);
 
-        S = S.*N; V1 = V1.*N; V2 = V2.*N; R = R.*N; D = D.*N;
+        S = S.*N; V1 = V1.*N; V2 = V2.*N; R = R.*N; RW = RW.*N; D = D.*N;
         I = I.*N; VR1 = VR1.*N; VS1 = VS1.*N; VR2 = VR2.*N; VS2 = VS2.*N; 
         Iv = Iv.*N; VSR2 = VSR2.*N; VSR1 = VSR1.*N;
         
@@ -125,7 +125,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         barv=[sum(y(:,[nV2 nVS2],nS),2), ... % Fully Vaccinated, susceptible
             sum(y(:,[nV1 nVS1],nS),2), ... % First dose, susceptible
             y(:,nUV,nS), ... % Unvaccinated, susceptible
-            sum(y(:,:,nR),2), ... % Recovered
+            sum(y(:,:,[nR,nRW]),[2,3]), ... % Recovered
             sum(y(:,:,nD),2), ... % Deceased
             sum(y(:,:,nI),[2,3])]; % Infected
 
@@ -153,15 +153,19 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             sum(y(:,nVS1,:),3), ... % First dose, waning
             sum(y(:,nV2,:),3), ... % Fully vaccinated
             sum(y(:,nVS2,:),3), ... % Fully vaccinated, waning
-            sum(y(:,nUV,:),3)]; % Unvaccinated
+            y(:,nUV,nS), ... % Unvaccinated, susceptible
+            sum(y(:,nUV,[nI,nR]),3), ... % Unvaccinated, recovered
+            y(:,nUV,nRW)]; % Unvaccinated, recovered, waning
 
         barv_daily = interp1(dt,barv,dt_daily);
         barf = bar(dt_daily,barv_daily,1,'stacked');
         barf(1).FaceColor = gray/2; barf(1).DisplayName = "First dose";
         barf(2).FaceColor = gray; barf(2).DisplayName = "First dose, waning";
         barf(3).FaceColor = gold; barf(3).DisplayName = "Fully vaccinated";
-        barf(4).FaceColor = brown; barf(4).DisplayName = "Fully vaccinated, waning";
+        barf(4).FaceColor = (2+gold)/3; barf(4).DisplayName = "Fully vaccinated, waning";
         barf(5).FaceColor = red; barf(5).DisplayName = "Unvaccinated";
+        barf(6).FaceColor = red/2; barf(6).DisplayName = "Unvaccinated, recovered";
+        barf(7).FaceColor = black; barf(7).DisplayName = "Unvaccinated, recovered, waning";
         axis tight; legend('location','EastOutside')
         title(loc_name)
         
@@ -397,8 +401,8 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     if disp_opts.combined_phi || disp_opts.all_figs
         figure(disp_opts.combined_phi_fig);
         
-        VE = [zeros(size(fixed_params.VE1V)) ; fixed_params.VE1V ; fixed_params.VE2V ; fixed_params.VESV];
-        phi = (1-VE) .* repmat(fixed_params.dbeta,4,1);
+        VE = [zeros(size(fixed_params.VE1V)) ; fixed_params.VE1V ; fixed_params.VE2V];
+        phi = (1-VE) .* repmat(fixed_params.dbeta,3,1);
         
         N_countries = length(all_countries);
         subplot(ceil(N_countries/3),min(3,N_countries),find(all_countries==abbrev,1))
@@ -423,8 +427,8 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     if disp_opts.combined_phi3d || disp_opts.all_figs
         figure(disp_opts.combined_phi3d_fig);
         
-        VE = [zeros(size(fixed_params.VE1V)) ; fixed_params.VE1V ; fixed_params.VE2V ; fixed_params.VESV];
-        phi = (1-VE) .* repmat(fixed_params.dbeta,4,1);
+        VE = [zeros(size(fixed_params.VE1V)) ; fixed_params.VE1V ; fixed_params.VE2V];
+        phi = (1-VE) .* repmat(fixed_params.dbeta,3,1);
         
         N_countries = length(all_countries);
         subplot(ceil(N_countries/3),min(3,N_countries),find(all_countries==abbrev,1))

@@ -82,8 +82,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-% fn = {'IN'};
-fn = {'US','IN','DE','BR','JP','ZA'};
+fn = {'US'};
+% fn = {'US','IN','DE','BR','JP','ZA'};
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
