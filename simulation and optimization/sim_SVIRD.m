@@ -40,7 +40,7 @@ for v = 1:(n_vars+1) %one loop per strain in order of incidence
     y0 = y(end,:);
     if v > 1
         % reshape compartment array into matrix
-        y0 = reshape(y0,[4,numel(y0)/4]);
+        y0 = reshape(y0,[5,numel(y0)/5]);
         
         y0(nUV,nIv(i(v-1))) = 1/N; y0(nUV,nS) = y0(nUV,nS)-1/N; % initial conditions (mutation)
         

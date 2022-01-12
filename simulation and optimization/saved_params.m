@@ -120,7 +120,7 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.8463 2.1801 4.0832 1.7868]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3 0.49];
                 fixed_params.VE2V = [0.94 0.84 0.88 0.94];
-                fixed_params.VES1V = [0.8 0.5 0.65 0.8];
+                fixed_params.VES1V = [0.49 0.6 0.3 0.49];
                 fixed_params.VES2V = [0.8 0.5 0.65 0.8];
                 
                 fixed_params.country_color = [0.2353 0.2314 0.4314];
