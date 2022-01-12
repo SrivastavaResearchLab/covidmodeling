@@ -4,14 +4,15 @@ param = vary_params(t,param);
 n_var = length(fixed_params.dbeta);
 
 % reshape compartment array into matrix
-y = reshape(y,[4,numel(y)/4]);
+y = reshape(y,[5,numel(y)/5]);
 
 nS = 1; nR = 2; nD = 3; nI = 4:(4+n_var);
-nUV = 1; nV1 = 2; nV2 = 3; nVS = 4;
+nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
-threshold = 1e-6;
+% set vaccination to zero if compartment is below this threshold
+vacc_threshold = 1e-6;
 
-V_total = sum(y([nV1 nV2 nVS],[nS nR nI]),'all');
+V_total = sum(y([nV1 nV2 nVS1 nVS2],[nS nR nI]),'all');
 I_total = sum(y(:,nI),'all');
 b = calc_beta(V_total, I_total, param);
 
@@ -20,30 +21,56 @@ gamma_var = fixed_params.gamma_var; mu_var = fixed_params.mu_var;
 dbeta = fixed_params.dbeta; t_imm = fixed_params.t_imm;
 VE1 = fixed_params.VE1; VE2 = fixed_params.VE2;
 VE1V = fixed_params.VE1V'; VE2V = fixed_params.VE2V';
-VES = fixed_params.VES; VESV = fixed_params.VESV';
+VES1 = fixed_params.VES1; VES1V = fixed_params.VES1V';
+VES2 = fixed_params.VES2; VES2V = fixed_params.VES2V';
 
 % calculate alpha(t)
 date = index2date(fixed_params.US_data,fixed_params.start_day,t);
-[alpha1,alpha2,alpha3] = calc_alpha(fixed_params,date);
+[alpha1,alpha2,alphaB] = calc_alpha(fixed_params,date);
 
 % VE(immunity #, variant #)
-% immunity #: unvaccinated, first dose, second dose, waning immunity
-VE = [zeros(1,1+n_var) ; [VE1 VE1V'] ; [VE2 VE2V'] ; [VES VESV']];
-
-% WANING IMMUNITY FROM UNVACCINATED, RECOVERED? **NO REINFECTIONS?
-upflow = [0 ; 0 ; 0 ; alpha3];
-downflow = [alpha1 ; alpha2 ; 1/t_imm ; 0];
-
-upflow   = repmat(upflow,  [1,size(y,2)]);
-downflow = repmat(downflow,[1,size(y,2)]);
+% immunity #: unvaccinated, first dose, second dose, waning1, waning2
+VE = [zeros(1,1+n_var) ; [VE1 VE1V'] ; [VE2 VE2V'] ; [VES1 VES1V'] ; [VES2 VES2V']];
 
 % set vacc. outflow of compartment to zero if below threshold and reproportion
-[upflow,downflow] = check_empty(y,upflow,downflow,threshold,nD);
+weights = distribute_flows(y,vacc_threshold,nD);
 
-% pad outflow matrices
-pad = zeros(1,size(upflow,2));
-upflow = [pad ; upflow ; pad];
-downflow = [pad ; downflow ; pad];
+% waning immunity population proportions (for second dose and booster)
+propS1 = sum(y(nVS1,:))/(sum(y(nVS1,:)) + sum(y(nV1,:)));
+propS2 = sum(y(nVS2,:))/(sum(y(nVS2,:)) + sum(y(nV2,:)));
+propV1 = 1 - propS1;
+propV2 = 1 - propS2;
+
+% replace NaN with 1,0 (in case of 0/0=NaN)
+if isnan(propS1)
+    propS1 = 1; propV1 = 0;
+end
+
+if isnan(propS2)
+    propS2 = 1; propV2 = 0;
+end
+
+% define flows between stacks in stacked compartment model
+no_flow = zeros(1,size(y,2));
+vacc_inflow = [no_flow ; ...
+            alpha1 * weights(nUV,:) ; ...
+            alpha2 * (propV1*weights(nV1,:)+propS1*weights(nVS1,:)) + alphaB * propS2*weights(nVS2,:) ; ...
+            no_flow ; ...
+            no_flow];
+
+vacc_outflow = [alpha1 * weights(nUV,:) ; ...
+            alpha2 * propV1*weights(nV1,:) ; ...
+            no_flow ; ...
+            alpha2 * propS1*weights(nVS1,:) ; ...
+            alphaB * propS2*weights(nVS2,:)];
+
+wane_flow = [no_flow ; ...
+                -y(nV1,:)/t_imm ; ... % waning immunity from first dose
+                -y(nV2,:)/t_imm ; ... % waning immunity from second dose
+                y(nV1,:)/t_imm ; ... % waning immunity from first dose
+                y(nV2,:)/t_imm]; % waning immunity from second dose
+
+net_flow = vacc_inflow - vacc_outflow + wane_flow;
 
 % calculate variant betas and append original strain beta, gamma,& mu (dbeta=1)
 b = [1 dbeta]*b;
@@ -51,18 +78,15 @@ gamma = [gamma gamma_var];
 mu = [mu mu_var];
 
 dydt = zeros(size(y));
-for nimm = 1:4
+for nimm = [nUV nV1 nV2 nVS1 nVS2] %(1:5)
     S = y(nimm,nS); I = y(nimm,nI); R = y(nimm,nR); D = y(nimm,nD);
     ve = VE(nimm,:);
     
-    % calculate net outflow for each immunity level
-    outflow = -upflow(nimm+1,:) - downflow(nimm+1,:) + upflow(nimm+2,:) + downflow(nimm,:);
-    
     % differential equations
-    dydt(nimm,nS) = -S*sum((1-ve).*b.*I) + outflow(nS);
-    dydt(nimm,nI) = (S.*b.*(1-ve) - mu.*gamma - gamma).*I + outflow(nI);
-    dydt(nimm,nR) = sum(gamma.*I) + outflow(nR);
-    dydt(nimm,nD) = sum(mu.*gamma.*I) + outflow(nD);
+    dydt(nimm,nS) = -S*sum((1-ve).*b.*I) + net_flow(nimm,nS);
+    dydt(nimm,nI) = (S.*b.*(1-ve) - mu.*gamma - gamma).*I + net_flow(nimm,nI);
+    dydt(nimm,nR) = sum(gamma.*I) + net_flow(nimm,nR);
+    dydt(nimm,nD) = sum(mu.*gamma.*I) + net_flow(nimm,nD);
 end
 
 % reshape compartment matrix back to array

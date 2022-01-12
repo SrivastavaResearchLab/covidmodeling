@@ -6,9 +6,6 @@ end_day = fixed_params.end_day;
 N = fixed_params.N;
 n_vars = length(fixed_params.dbeta);
 
-% M0 = fixed_params.M(1); Mf = fixed_params.M(2);
-% dM = fixed_params.M(3); t_dM = fixed_params.M(4);
-% M = Mf + (M0-Mf)./(1+exp(dM.*(start_day-t_dM)));
 US_data = fixed_params.US_data;
 start_dt = index2date(US_data,start_day,start_day);
 M = calc_M(fixed_params,start_dt);
@@ -18,9 +15,9 @@ start_inf = max(1,start_day-round(1/param.gamma(1)));
 I0 = M*sum(fixed_params.US_data.average(start_inf:start_day))/N;
 R0 = M*sum(fixed_params.US_data.average(1:start_inf))/N;
 S0 = 1 - I0 - R0;
-ymat = zeros(4,4+n_vars);
+ymat = zeros(5,4+n_vars);
 nS = 1; nR = 2; nD = 3; nI = 4; nIv = 5:(5+n_vars-1);
-nUV = 1; nV1 = 2; nV2 = 3; nVS = 4;
+nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 ymat(nUV,nS) = S0; ymat(nUV,nR) = R0; ymat(nUV,nI) = I0; t = 0; % initial conditions
 
 % reshape y array into row vector for ode45

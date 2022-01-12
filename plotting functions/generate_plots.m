@@ -22,7 +22,8 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
         VE1 = fixed_params.VE1; VE2 = fixed_params.VE2;
         VE1V = fixed_params.VE1V; VE2V = fixed_params.VE2V;
-        VES = fixed_params.VES; VESV = fixed_params.VESV;
+        VES1 = fixed_params.VES1; VES1V = fixed_params.VES1V;
+        VES2 = fixed_params.VES2; VES2V = fixed_params.VES2V;
         var_names = fixed_params.var_names;
 
         n_var = length(fixed_params.dbeta);
@@ -31,20 +32,21 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         [t,y] = sim_SVIRD(param,fixed_params);
         
         % reshape compartment array into matrix
-        y = reshape(y,[size(y,1),4,size(y,2)/4]);
+        y = reshape(y,[size(y,1),5,size(y,2)/5]);
         
         % recover compartments: y(immunity #, compartment #)
         nS = 1; nR = 2; nD = 3; nI = 4:(4+n_var);
-        nUV = 1; nV1 = 2; nV2 = 3; nVS = 4;
+        nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
         S = y(:,nUV,nS); V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
         R = y(:,nUV,nR); VR1 = y(:,nV1,nR); VR2 = y(:,nV2,nR);
         D = sum(y(:,:,nD),2);
         I = squeeze(sum(y(:,:,nI(1)),2));
         Iv = squeeze(sum(y(:,:,nI(2:end)),2));
-        VS2 = y(:,nVS,nS); VSR2 = y(:,nVS,nR);
+        VS1 = y(:,nVS1,nS); VSR1 = y(:,nVS1,nR);
+        VS2 = y(:,nVS2,nS); VSR2 = y(:,nVS2,nR);
 
-        V = sum(y(:,[nV1 nV2 nVS],[nS nI nR]),[2 3]);
+        V = sum(y(:,[nV1 nV2 nVS1 nVS2],[nS nI nR]),[2 3]);
 
         % convert t to datetime in same timeframe
         dt = datetime(datestr(datenum(US_data.date(start_day))+t));
@@ -57,19 +59,21 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         new_cases = S.*(b.*I + b.*sum(dbeta.*Iv,2)) + ...
             V1.*((1-VE1).*b.*I + b.*sum((1-VE1V).*dbeta.*Iv,2)) + ...
             V2.*((1-VE2).*b.*I + b.*sum((1-VE2V).*dbeta.*Iv,2)) + ...
-            VS2.*((1-VES).*b.*I + b.*sum((1-VES).*dbeta.*Iv,2));
+            VS1.*((1-VES1).*b.*I + b.*sum((1-VES1V).*dbeta.*Iv,2)) + ...
+            VS2.*((1-VES2).*b.*I + b.*sum((1-VES2V).*dbeta.*Iv,2));
         bv = b.*dbeta;
         new_casesv = S.*(bv.*Iv) + ...
             V1.*(b.*(1-VE1V).*dbeta.*Iv) + ...
             V2.*(b.*(1-VE2V).*dbeta.*Iv) + ...
-            VS2.*(b.*(1-VESV).*dbeta.*Iv);
+            VS1.*(b.*(1-VES1V).*dbeta.*Iv) + ...
+            VS2.*(b.*(1-VES2V).*dbeta.*Iv);
         new_cases = new_cases .* N;
         new_casesv = new_casesv .* N;
         [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dt_daily);
 
         S = S.*N; V1 = V1.*N; V2 = V2.*N; R = R.*N; D = D.*N;
-        I = I.*N; VR1 = VR1.*N; VR2 = VR2.*N; VS2 = VS2.*N; Iv = Iv.*N;
-        VSR2 = VSR2.*N;
+        I = I.*N; VR1 = VR1.*N; VS1 = VS1.*N; VR2 = VR2.*N; VS2 = VS2.*N; 
+        Iv = Iv.*N; VSR2 = VSR2.*N; VSR1 = VSR1.*N;
         
         M = calc_M(fixed_params,dt);
         M_daily = calc_M(fixed_params,dt_daily);
@@ -118,21 +122,46 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
     if disp_opts.SVEIRD_plot || disp_opts.all_figs
         fig=figure;
-        barv=[S,V1,V2,VS2,R+VR1+VR2+VSR2,D,I,Iv];
+        barv=[sum(y(:,[nV2 nVS2],nS),2), ... % Fully Vaccinated, susceptible
+            sum(y(:,[nV1 nVS1],nS),2), ... % First dose, susceptible
+            y(:,nUV,nS), ... % Unvaccinated, susceptible
+            sum(y(:,:,nR),2), ... % Recovered
+            sum(y(:,:,nD),2), ... % Deceased
+            sum(y(:,:,nI),[2,3])]; % Infected
+
         barv_daily = interp1(dt,barv,dt_daily);
         barf = bar(dt_daily,barv_daily,1,'stacked');
-        barf(1).FaceColor = brown; barf(1).DisplayName = "Susceptible";
-        barf(2).FaceColor = gray; barf(2).DisplayName = "First dose";
-        barf(3).FaceColor = gray/2; barf(3).DisplayName = "Fully Vaccinated";
-        barf(4).FaceColor = blue; barf(4).DisplayName = "Vaccinated Susceptible";
-        barf(5).FaceColor = gold; barf(5).DisplayName = "Recovered";
-        barf(6).FaceColor = black; barf(6).DisplayName = "Deceased";
-        barf(7).FaceColor = red; barf(7).DisplayName = "Infected";
-        for i=1:n_var
-            f = (n_var+1-i)/(n_var+1);
-            barf(i+7).FaceColor = red*f;
-            barf(i+7).DisplayName = "Infected (" + var_names(i) + ")";
+        barf(1).FaceColor = gray/2; barf(1).DisplayName = "Fully Vaccinated, susceptible";
+        barf(2).FaceColor = gray; barf(2).DisplayName = "First dose, susceptible";
+        barf(3).FaceColor = brown; barf(3).DisplayName = "Unvaccinated, susceptible";
+        barf(4).FaceColor = gold; barf(4).DisplayName = "Recovered";
+        barf(5).FaceColor = black; barf(5).DisplayName = "Deceased";
+        barf(6).FaceColor = red; barf(6).DisplayName = "Infected";
+        axis tight; legend('location','EastOutside')
+        title(loc_name)
+        
+        if disp_opts.save_figs
+            saveas(fig,"./png/SVEIRD_" + string(loc_name) + ".png")
+            saveas(fig,"./fig/SVEIRD_" + string(loc_name) + ".fig")
+            saveas(fig,"./eps/SVEIRD_" + string(loc_name) + ".eps",'epsc')
         end
+    end
+
+    if disp_opts.stacks_plot || disp_opts.all_figs
+        fig=figure;
+        barv=[sum(y(:,nV1,:),3), ... % First dose
+            sum(y(:,nVS1,:),3), ... % First dose, waning
+            sum(y(:,nV2,:),3), ... % Fully vaccinated
+            sum(y(:,nVS2,:),3), ... % Fully vaccinated, waning
+            sum(y(:,nUV,:),3)]; % Unvaccinated
+
+        barv_daily = interp1(dt,barv,dt_daily);
+        barf = bar(dt_daily,barv_daily,1,'stacked');
+        barf(1).FaceColor = gray/2; barf(1).DisplayName = "First dose";
+        barf(2).FaceColor = gray; barf(2).DisplayName = "First dose, waning";
+        barf(3).FaceColor = gold; barf(3).DisplayName = "Fully vaccinated";
+        barf(4).FaceColor = brown; barf(4).DisplayName = "Fully vaccinated, waning";
+        barf(5).FaceColor = red; barf(5).DisplayName = "Unvaccinated";
         axis tight; legend('location','EastOutside')
         title(loc_name)
         
@@ -301,7 +330,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             plot(dt(start_var:end),Iv(start_var:end,i),'--','Color',red*f,'DisplayName','Infected ('+var_names(i)+')','LineWidth',8)
         end
         
-        axis tight; ;
+        axis tight;
         xlim([dt(start_var) dt(end)])
         legend('location','EastOutside')
         title(loc_name)

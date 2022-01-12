@@ -22,7 +22,8 @@ fixed_params.calc_variants = 1;
 
 % set display options
 disp_opts.print_params = 1; disp_opts.fname="";
-disp_opts.SVEIRD_plot = 0;
+disp_opts.SVEIRD_plot = 1;
+disp_opts.stacks_plot = 1;
 disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;

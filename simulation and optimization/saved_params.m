@@ -24,7 +24,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.5140 2.8683 2.7973 1.5170]; % IN
                 fixed_params.VE1V = [0.514 0.48 0.329 0.514];
                 fixed_params.VE2V = [0.661 0.824 0.598 0.661]; % gamma not sure (assume original strain)
-                fixed_params.VESV = [0.3 0.5 0.25 0.3];
+                fixed_params.VES1V = [0.3 0.5 0.25 0.3];
+                fixed_params.VES2V = [0.3 0.5 0.25 0.3];
                 
                 fixed_params.country_color = [1.0000 0.6000 0.2000];
 %                 fixed_params.country_color = [0.0706 0.5333 0.0275];
@@ -47,7 +48,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.8185 2.1101 4.9264]; % DE % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
 %                 fixed_params.country_color = [.8667 0 0];
 %                 fixed_params.country_color = [1.0000 0.8078 0];
@@ -71,7 +73,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.7345 1.8756 3.3793]; % CA % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
                 fixed_params.country_color = [1 0 0];
         end
@@ -93,7 +96,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [3.2188 3.7752 9.9908]; % BR
                 fixed_params.VE1V = 0.35*ones(1,3); % not sure (assume original strain)
                 fixed_params.VE2V = 0.66*ones(1,3); % not sure (assume original strain)
-                fixed_params.VESV = 0.3*ones(1,3);
+                fixed_params.VES1V = 0.3*ones(1,3);
+                fixed_params.VES2V = 0.3*ones(1,3);
                 
                 fixed_params.country_color = [0 0.6078 0.2275];
         end
@@ -116,7 +120,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.8463 2.1801 4.0832 1.7868]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3 0.49];
                 fixed_params.VE2V = [0.94 0.84 0.88 0.94];
-                fixed_params.VESV = [0.8 0.5 0.65 0.8];
+                fixed_params.VES1V = [0.8 0.5 0.65 0.8];
+                fixed_params.VES2V = [0.8 0.5 0.65 0.8];
                 
                 fixed_params.country_color = [0.2353 0.2314 0.4314];
 %                 fixed_params.country_color = [0.6980 0.1333 0.2039];
@@ -144,7 +149,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.6711 2.1695 4.1445]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
 %                 fixed_params.country_color = [0 0 0];
                 fixed_params.country_color = [0.0588 0.3922 0.8039];
@@ -168,7 +174,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [2.33 1.40 4.677]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
                 fixed_params.country_color = [0.7373 0 0.1765];
         end
@@ -190,7 +197,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.50661 2.01169 4.12573]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
                 fixed_params.country_color = [0.8706 0.2196 0.1922];
         end
@@ -200,14 +208,17 @@ switch fixed_params.dom_vacc
     case "Pfizer"
         fixed_params.VE1 = 0.8;
         fixed_params.VE2 = 0.95;
-        fixed_params.VES = 0.8;
+        fixed_params.VES1 = 0.8;
+        fixed_params.VES2 = 0.3;
     case "AstraZeneca"
         fixed_params.VE1 = 0.76;
         fixed_params.VE2 = 0.824;
-        fixed_params.VES = 0.5;
+        fixed_params.VES1 = 0.5;
+        fixed_params.VES2 = 0.3;
     case "Coronavac"
         fixed_params.VE1 = 0.35;
         fixed_params.VE2 = 0.66;
-        fixed_params.VES = 0.3;
+        fixed_params.VES1 = 0.3;
+        fixed_params.VES2 = 0.3;
 end
 end
