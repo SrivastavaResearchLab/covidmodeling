@@ -1,4 +1,4 @@
-function fixed_params = set_plot_defaults()
+function fixed_params = set_plot_defaults(fixed_params)
     % color scheme!
     brown = [78 54 41]/255;
     red   = [237 28 36]/255;

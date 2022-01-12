@@ -1,5 +1,5 @@
 %% Load Datasets
-close all; clear;
+close all;
 tic
 addpath('helper functions','source data',...
     'plotting functions','simulation and optimization')
@@ -9,9 +9,14 @@ pop_file = 'global population data.xlsx';
 vacc_file = 'vaccinations jan1.xlsx';
 test_file = 'daily_tests data jan1.xlsx';
 variant_file = 'gisaid_variants jan1.xlsx';
+new_data = 0;  % 1 to download above files, 0 to check if data already loaded
 
 % Set default plot settings
-fixed_params = set_plot_defaults();
+if exist('fixed_params','var')
+    fixed_params = set_plot_defaults(fixed_params);
+else
+    fixed_params = set_plot_defaults(struct);
+end
 
 %% Set Simulation Options
 fixed_params.optimize_params = 0;
@@ -77,8 +82,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-fn = {'US'};
-% fn = {'US','IN','DE','BR','JP','ZA'};
+% fn = {'IN'};
+fn = {'US','IN','DE','BR','JP','ZA'};
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
@@ -103,23 +108,31 @@ end
 
 fprintf(1, ['\n' loc_list.(fn{k}) '\n']);
 
+JHU_data = 'global covid cases jan1.xlsx';
+pop_file = 'global population data.xlsx';
+vacc_file = 'vaccinations jan1.xlsx';
+test_file = 'daily_tests data jan1.xlsx';
+variant_file = 'gisaid_variants jan1.xlsx';
 % get data from source
-[US_data,N] = set_population(JHU_data,pop_file,pop_name,JHU_name);
-fixed_params.test_data = get_test_data(location, test_file);
-fixed_params.vacc_data = get_vacc_data(location, vacc_file);
+if new_data || ~exist('case_data','var') || ~any(strcmp(case_data.selected,JHU_name))
+    disp('loading new data')
+    [case_data,N] = set_population(JHU_data,pop_file,pop_name,JHU_name);
+    fixed_params.test_data = get_test_data(location, test_file);
+    fixed_params.vacc_data = get_vacc_data(location, vacc_file);
+end
 var_data.vsheet_name = vsheet_name; var_data.variant_file = variant_file;
 
 %% Optimize Parameters and Run Simulation
 % time frame used to fit parameters
 start_day = 53;
-end_day = length(US_data.cases); % 358+46;
+end_day = length(case_data.cases); % 358+46;
 
 % length of simulation (days)
 T = end_day - start_day;
 t_span = [0 T];
 
 % set fixed_param array for simulation
-fixed_params.US_data = US_data; fixed_params.start_day = start_day; 
+fixed_params.US_data = case_data; fixed_params.start_day = start_day; 
 fixed_params.end_day = end_day; fixed_params.nturn_dates = nturn_dates;
 fixed_params.N = N; fixed_params.location = location;
 fixed_params.show_trans = disp_opts.show_trans;

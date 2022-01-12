@@ -15,10 +15,14 @@ function data_out = get_vacc_data(region, vacc_data)
     
     % interpolate and smooth vaccination data (fully vaccinated)
     nanx = isnan(people_fully_vaccinated);
-    t=1:numel(people_fully_vaccinated);
-    people_fully_vaccinated(nanx) = ...
-        interp1(t(~nanx), people_fully_vaccinated(~nanx), t(nanx));
-    people_fully_vaccinated = movmean(people_fully_vaccinated,7);
+    if sum(~nanx) > 0
+        t=1:numel(people_fully_vaccinated);
+        people_fully_vaccinated(nanx) = ...
+            interp1(t(~nanx), people_fully_vaccinated(~nanx), t(nanx));
+        people_fully_vaccinated = movmean(people_fully_vaccinated,7);
+    else
+        people_fully_vaccinated = zeros(size(nanx));
+    end
     
     % replace first section of missing data with 0 (no one is fully vaxxed)
     nanx = isnan(people_fully_vaccinated);
@@ -26,17 +30,25 @@ function data_out = get_vacc_data(region, vacc_data)
     
     % interpolate and smooth vaccination data (any dose)
     nanx = isnan(people_vaccinated);
-    t=1:numel(people_vaccinated);
-    people_vaccinated(nanx) = ...
-        interp1(t(~nanx), people_vaccinated(~nanx), t(nanx));
-    people_vaccinated = movmean(people_vaccinated,7);
+    if sum(~nanx) > 0
+        t=1:numel(people_vaccinated);
+        people_vaccinated(nanx) = ...
+            interp1(t(~nanx), people_vaccinated(~nanx), t(nanx));
+        people_vaccinated = movmean(people_vaccinated,7);
+    else
+        people_vaccinated = zeros(size(nanx));
+    end
 
     % interpolate and smooth vaccination data (booster)
     nanx = isnan(total_boosters);
-    t=1:numel(total_boosters);
-    total_boosters(nanx) = ...
-        interp1(t(~nanx), total_boosters(~nanx), t(nanx));
-    total_boosters = movmean(total_boosters,7);
+    if sum(~nanx) > 0
+        t=1:numel(total_boosters);
+        total_boosters(nanx) = ...
+            interp1(t(~nanx), total_boosters(~nanx), t(nanx));
+        total_boosters = movmean(total_boosters,7);
+    else
+        total_boosters = zeros(size(nanx));
+    end
 
     people_fully_vaccinated = [0 ; people_fully_vaccinated];
     people_vaccinated = [0 ; people_vaccinated];
