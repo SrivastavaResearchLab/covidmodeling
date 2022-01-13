@@ -5,7 +5,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             disp_opts.combined_cases || disp_opts.combined_M || ...
             disp_opts.combined_alpha || disp_opts.variant_plot || ...
             disp_opts.check_variants || disp_opts.legend || ...
-            disp_opts.combined_phi
+            disp_opts.combined_phi || disp_opts.all_figs
         
         colors = fixed_params.colors;
         brown=colors.brown; red=colors.red; gray=colors.gray;
@@ -170,9 +170,9 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         title(loc_name)
         
         if disp_opts.save_figs
-            saveas(fig,"./png/SVEIRD_" + string(loc_name) + ".png")
-            saveas(fig,"./fig/SVEIRD_" + string(loc_name) + ".fig")
-            saveas(fig,"./eps/SVEIRD_" + string(loc_name) + ".eps",'epsc')
+            saveas(fig,"./png/stacks_" + string(loc_name) + ".png")
+            saveas(fig,"./fig/stacks_" + string(loc_name) + ".fig")
+            saveas(fig,"./eps/stacks_" + string(loc_name) + ".eps",'epsc')
         end
     end
 
@@ -447,6 +447,47 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             saveas(gcf,"./png/phi3d_" + string(loc_name) + ".png")
             saveas(gcf,"./fig/phi3d_" + string(loc_name) + ".fig")
             saveas(gcf,"./eps/phi3d_" + string(loc_name) + ".eps",'epsc')
+        end
+    end
+
+    if disp_opts.test_wane || disp_opts.all_figs
+        fig=figure; hold on
+
+        ymat = zeros(5,5+length(fixed_params.dbeta));
+        nS = 1; nV1 = 2; nV1W = 4;
+        ymat(nV1,nS) = 1; % initial conditions
+
+        % reshape y array into row vector for ode45
+        y0 = reshape(ymat,[1,numel(ymat)]);
+
+        %set ode solver options
+        reltol = 1e-6; maxstep = 1; abstol = 1e-6;
+        options = odeset('RelTol',reltol,'AbsTol',abstol,'MaxStep',maxstep);
+
+        fixed_params_test = fixed_params;
+        fixed_params_test.vacc_data.alpha1_reported = ...
+            zeros(size(fixed_params.vacc_data.alpha1_reported));
+        fixed_params_test.vacc_data.alpha2_reported = ...
+            zeros(size(fixed_params.vacc_data.alpha2_reported));
+
+        [tv,yw] = ode45(@(tsim,ysim) SIRD_VB(tsim,ysim,param,fixed_params_test),...
+            [0 4*fixed_params.t_imm],y0,options);
+
+        % reshape compartment array into matrix
+        yw = reshape(yw,[size(yw,1),5,size(yw,2)/5]);
+        V1_test = yw(:,nV1,nS); V1W_test = yw(:,nV1W,nS);
+
+        plot(tv,V1W_test,'r','DisplayName',"Waning")
+        plot(tv,V1_test,'k','DisplayName',"Immunized")
+        plot(tv,V1_test./(V1_test+V1W_test),'--', 'DisplayName','Percent immunity', ...
+            'color',fixed_params.colors.gray)
+
+        legend('location','eastoutside')
+        
+        if disp_opts.save_figs
+            saveas(fig,"./png/wane.png")
+            saveas(fig,"./fig/wane.fig")
+            saveas(fig,"./eps/wane.eps",'epsc')
         end
     end
 

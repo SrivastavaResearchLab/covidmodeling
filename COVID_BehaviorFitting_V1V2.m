@@ -27,22 +27,24 @@ fixed_params.calc_variants = 1;
 
 % set display options
 disp_opts.print_params = 1; disp_opts.fname="";
-disp_opts.SVEIRD_plot = 1;
-disp_opts.stacks_plot = 1;
-disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
+disp_opts.SVEIRD_plot = 0;
+disp_opts.stacks_plot = 0;
+disp_opts.plot_cases = 0; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;
 disp_opts.combined_cases = 0;
 disp_opts.combined_M = 0;
-disp_opts.combined_alpha = 1;
+disp_opts.combined_alpha = 0;
 disp_opts.variant_plot = 0; % variant proportions over time
 
 disp_opts.bgvar_sensitivity = 0;
 disp_opts.beta_gamma_sensitivity = 0;
 disp_opts.var_params_plots = 0;
-disp_opts.check_variants = 1; % reported/predicted variants over time
+disp_opts.check_variants = 0; % reported/predicted variants over time
 disp_opts.combined_phi = 0; % dbeta*VE for each variant/dosage
 disp_opts.combined_phi3d = 0; % dbeta*VE for each variant/dosage
+
+disp_opts.test_wane = 1;
 
 disp_opts.legend = 0;
 disp_opts.all_figs = 0;
