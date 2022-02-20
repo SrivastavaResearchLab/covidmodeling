@@ -116,7 +116,7 @@ switch char(fixed_params.location)
                 fixed_params.vdate = datetime(["October 9, 2020","December 6, 2020","March 9, 2021","October 18, 2020"]);
                 fixed_params.dom_vacc = "Pfizer";
                 
-                fixed_params.var_names = ["alpha","gamma","delta","iota"];
+                fixed_params.var_names = ["alpha","gamma","delta","iota"]; % drop gamma, add omicron
                 fixed_params.dbeta = [1.8463 2.1801 4.0832 1.7868]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3 0.49];
                 fixed_params.VE2V = [0.94 0.84 0.88 0.94];

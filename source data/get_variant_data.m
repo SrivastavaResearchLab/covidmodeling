@@ -6,7 +6,7 @@ function fixed_params = get_variant_data(var_data, fixed_params)
 
     for v = 1:length(var_names)
         var = char(var_names(v));
-        is_voc = sum(var == ["alpha" "beta" "gamma" "delta"]);
+        is_voc = sum(var == ["alpha" "beta" "gamma" "delta" "omicron"]);
         if is_voc
             sheet_name = "VOC " + upper(var(1)) + lower(var(2:end));
         else
@@ -38,8 +38,9 @@ function fixed_params = get_variant_data(var_data, fixed_params)
             
             variant_data.(var_names(v)) = v_data;
         end
+        t = table2array(variant_sheet(1,3:end));
     end
-    t = table2array(variant_sheet(1,3:end));
+    
     week = cellfun(@(x) str2double(x(end-1:end)),t,'UniformOutput',false);
     year = cellfun(@(x) str2double(x(1:4)),t,'UniformOutput',false);
     

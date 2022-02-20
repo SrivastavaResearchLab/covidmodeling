@@ -4,12 +4,12 @@ tic
 addpath('helper functions','source data',...
     'plotting functions','simulation and optimization')
 
-JHU_data = 'global covid cases jan1.xlsx';
+JHU_data = 'global covid cases jan19.xlsx';
 pop_file = 'global population data.xlsx';
-vacc_file = 'vaccinations jan1.xlsx';
-test_file = 'daily_tests data jan1.xlsx';
-variant_file = 'gisaid_variants jan1.xlsx';
-new_data = 0;  % 1 to download above files, 0 to check if data already loaded
+vacc_file = 'vaccinations jan19.xlsx';
+test_file = 'daily_tests data jan19.xlsx';
+variant_file = 'gisaid_variants jan19.xlsx';
+new_data = 1;  % 1 to download above files, 0 to check if data already loaded
 
 % Set default plot settings
 if exist('fixed_params','var')
@@ -26,7 +26,7 @@ fixed_params.plot_optim = 1;
 fixed_params.calc_variants = 1;
 
 % set display options
-disp_opts.print_params = 1; disp_opts.fname="";
+disp_opts.print_params = 0; disp_opts.fname="";
 disp_opts.SVEIRD_plot = 0;
 disp_opts.stacks_plot = 0;
 disp_opts.plot_cases = 0; disp_opts.show_trans = 1;
@@ -44,7 +44,7 @@ disp_opts.check_variants = 0; % reported/predicted variants over time
 disp_opts.combined_phi = 0; % dbeta*VE for each variant/dosage
 disp_opts.combined_phi3d = 0; % dbeta*VE for each variant/dosage
 
-disp_opts.test_wane = 1;
+disp_opts.test_wane = 1; % test simulation with only vaccinations (no infections)
 
 disp_opts.legend = 0;
 disp_opts.all_figs = 0;
@@ -84,8 +84,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-fn = {'US'};
-% fn = {'US','IN','DE','BR','JP','ZA'};
+% fn = {'US'};
+fn = {'US','DE','BR','IN','KR','ZA'};
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
@@ -110,11 +110,6 @@ end
 
 fprintf(1, ['\n' loc_list.(fn{k}) '\n']);
 
-JHU_data = 'global covid cases jan1.xlsx';
-pop_file = 'global population data.xlsx';
-vacc_file = 'vaccinations jan1.xlsx';
-test_file = 'daily_tests data jan1.xlsx';
-variant_file = 'gisaid_variants jan1.xlsx';
 % get data from source
 if new_data || ~exist('case_data','var') || ~any(strcmp(case_data.selected,JHU_name))
     disp('loading new data')

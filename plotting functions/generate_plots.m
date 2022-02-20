@@ -198,10 +198,10 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
     if disp_opts.combined_d1 || disp_opts.all_figs
         figure(disp_opts.combined_d1_fig);
-        plot(dt,param_t.d1,'DisplayName',loc_name,'Color',country_color)
+        semilogy(dt,param_t.d1,'DisplayName',loc_name,'Color',country_color)
         axis tight;
         
-        ylabel('Increasing level of caution, $d_I$',...
+        ylabel('Increasing level of caution, $log(d_I)$',...
             'interpreter','latex','FontSize',45)
         yl = ylim; ylim([0 yl(2)]);
         ax = gca; ax.YRuler.Exponent = 0;
