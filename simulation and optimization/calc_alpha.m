@@ -43,11 +43,11 @@ alpha1(bool_interp) = interp_result(bool_interp);
 alpha1(date_list(end) + alpha_transition < dates) = alpha1_reported(end)*frac_alpha1;
 
 %   _(alpha2)_
-if vacc_start_date == ""
+if ~fixed_params.retrospective_study
     y1 = alpha2_reported(end);
     y2 = alpha2_reported(end)*frac_alpha2;
 else
-    vacc_start_date = find(date_list==datetime(vacc_start_date));
+    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
     y1 = alpha2_reported(vacc_start_date);
     y2 = alpha2_reported(vacc_start_date)*frac_alpha2;
 end
@@ -62,11 +62,11 @@ alpha2(bool_interp) = interp_result(bool_interp);
 alpha2(date_list(end) + alpha_transition < dates) = alpha2_reported(end)*frac_alpha2;
 
 %   _(alphaB)_
-if vacc_start_date == ""
+if ~fixed_params.retrospective_study
     y1 = alphaB_reported(end);
     y2 = alphaB_reported(end)*frac_alphaB;
 else
-    vacc_start_date = find(date_list==datetime(vacc_start_date));
+    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
     y1 = alphaB_reported(vacc_start_date);
     y2 = alphaB_reported(vacc_start_date)*frac_alphaB;
 end
