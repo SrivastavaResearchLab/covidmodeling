@@ -1,4 +1,5 @@
 function [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dates)
+
 % define parameters to do sensitivity on
 sens_vars = fixed_params.sens_vars;
 frac_alpha1 = sens_vars.frac_alpha1;
@@ -26,8 +27,14 @@ alphaB(date_list(1) > dates) = 0;
 % smoothly transition from last reported date to value for future
 % predictions (last reported data point * frac_alpha)
 %   _(alpha1)_
-y1 = alpha1_reported(end);
-y2 = alpha1_reported(end)*frac_alpha1;
+if ~fixed_params.retrospective_study
+    y1 = alpha1_reported(end);
+    y2 = alpha1_reported(end)*frac_alpha1;
+else
+    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
+    y1 = alpha1_reported(vacc_start_date);
+    y2 = alpha1_reported(vacc_start_date)*frac_alpha1;
+end
 
 interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
 
@@ -36,8 +43,18 @@ alpha1(bool_interp) = interp_result(bool_interp);
 alpha1(date_list(end) + alpha_transition < dates) = alpha1_reported(end)*frac_alpha1;
 
 %   _(alpha2)_
-y1 = alpha2_reported(end);
-y2 = alpha2_reported(end)*frac_alpha2;
+if vacc_start_date == ""
+    y1 = alpha2_reported(end);
+    y2 = alpha2_reported(end)*frac_alpha2;
+else
+    vacc_start_date = find(date_list==datetime(vacc_start_date));
+    y1 = alpha2_reported(vacc_start_date);
+    y2 = alpha2_reported(vacc_start_date)*frac_alpha2;
+end
+
+
+% y1 = alpha2_reported(end);
+% y2 = alpha2_reported(end)*frac_alpha2;
 
 interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
 
@@ -45,8 +62,17 @@ alpha2(bool_interp) = interp_result(bool_interp);
 alpha2(date_list(end) + alpha_transition < dates) = alpha2_reported(end)*frac_alpha2;
 
 %   _(alphaB)_
-y1 = alphaB_reported(end);
-y2 = alphaB_reported(end)*frac_alphaB;
+if vacc_start_date == ""
+    y1 = alphaB_reported(end);
+    y2 = alphaB_reported(end)*frac_alphaB;
+else
+    vacc_start_date = find(date_list==datetime(vacc_start_date));
+    y1 = alphaB_reported(vacc_start_date);
+    y2 = alphaB_reported(vacc_start_date)*frac_alphaB;
+end
+
+% y1 = alphaB_reported(end);
+% y2 = alphaB_reported(end)*frac_alphaB;
 
 interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
 
