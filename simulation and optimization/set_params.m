@@ -5,7 +5,7 @@ nturn_dates = fixed_params.nturn_dates;
 param.mu = [0.005];
 param.gamma = 1/10;
 T = fixed_params.end_day - fixed_params.start_day;
-fixed_params.t_imm = 150; % waning immunity (days): 250
+fixed_params.t_imm = 150; % waning immunity time constant (days)
 
 % initial conditions of optimization (default if none saved)
 param.d1 = 100*ones(1,nturn_dates+1);

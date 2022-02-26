@@ -10,6 +10,7 @@ function test_data = get_test_data(region, reported_data)
     end
     
     daily_tests = reported_data.new_tests_smoothed_per_thousand;
+    daily_tests = movmean(daily_tests,14);
     
     test_data.daily_tests = daily_tests;
     test_data.t = reported_data.date;

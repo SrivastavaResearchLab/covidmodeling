@@ -25,5 +25,5 @@ M(reported_bool) = interp1(date_list,M_reported,dates(reported_bool));
 
 % M(dates > reported_dates(end)) = M_reported(end);
 
-M(~isnan(M)) = max(M(~isnan(M)),1); % actual/reported cases will never be < 1
+M(~isnan(M)) = max(M(~isnan(M)),2); % actual/reported cases will never be < 2
 end

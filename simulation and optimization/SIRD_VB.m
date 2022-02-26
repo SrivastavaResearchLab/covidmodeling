@@ -3,10 +3,11 @@ param = vary_params(t,param);
 
 n_var = length(fixed_params.dbeta);
 
-% reshape compartment array into matrix
+% reshape compartment array into matrix (5 stacks: nUV,nV1,nV2,nVS1,nVS2)
 y = reshape(y,[5,numel(y)/5]);
 
-nS = 1; nR = 2; nRW = 3; nD = 4; nI = 5:(5+n_var);
+nS = 1; nD = 2; nI = 3:(3+n_var);
+nR = (4+n_var):(4+2*n_var); nRW = (5+2*n_var):(5+3*n_var);
 nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
 % set vaccination to zero if compartment is below this threshold
@@ -23,6 +24,7 @@ VE1 = fixed_params.VE1; VE2 = fixed_params.VE2;
 VE1V = fixed_params.VE1V'; VE2V = fixed_params.VE2V';
 VES1 = fixed_params.VES1; VES1V = fixed_params.VES1V';
 VES2 = fixed_params.VES2; VES2V = fixed_params.VES2V';
+k = fixed_params.k; kw = fixed_params.kw;
 
 % calculate alpha(t)
 date = index2date(fixed_params.US_data,fixed_params.start_day,t);
@@ -85,9 +87,15 @@ for nimm = [nUV nV1 nV2 nVS1 nVS2] %(1:5)
     % differential equations
     dydt(nimm,nS) = -S*sum((1-ve).*b.*I) + net_flow(nimm,nS);
     dydt(nimm,nI) = (S.*b.*(1-ve) - mu.*gamma - gamma).*I + net_flow(nimm,nI);
-    dydt(nimm,nR) = sum(gamma.*I) - R/t_imm + net_flow(nimm,nR);
+    dydt(nimm,nR) = gamma.*I - R/t_imm + net_flow(nimm,nR);
     dydt(nimm,nRW) = R/t_imm + net_flow(nimm,nRW);
     dydt(nimm,nD) = sum(mu.*gamma.*I) + net_flow(nimm,nD);
+
+    % add reinfections
+    dydt(nimm,nI) = dydt(nimm,nI) + k.*b.*(1-ve).*I.*(sum(R)-R) ...
+                                  + kw.*b.*(1-ve).*I.*(sum(RW)-RW);
+    dydt(nimm,nR) = dydt(nimm,nR) - R.*(sum(k.*b.*I)-k.*b.*I);
+    dydt(nimm,nRW) = dydt(nimm,nRW) - RW.*(sum(kw.*b.*I)-kw.*b.*I);
 end
 
 % reshape compartment matrix back to array

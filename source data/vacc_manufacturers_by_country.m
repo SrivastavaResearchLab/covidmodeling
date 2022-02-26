@@ -11,6 +11,6 @@ for region = ["United States","India","Brazil","Germany","South Korea","South Af
         v = ismember(string(country_data.vaccine),vnames(i));
         plot(country_data.date(v),country_data.total_vaccinations(v),'DisplayName',vnames(i));
     end
-    legend
+    legend('location','northwest')
     title(region)
 end

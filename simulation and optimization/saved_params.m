@@ -111,7 +111,7 @@ switch char(fixed_params.location)
                 param.d2 = [0.34508];
                 
                 fixed_params.Mmax = 10;
-                fixed_params.Mg = 5;
+                fixed_params.Mg = 6;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
                 fixed_params.vdate = datetime(["October 9, 2020","December 6, 2020","March 9, 2021","October 18, 2020"]);
                 fixed_params.dom_vacc = "Pfizer";  
@@ -221,4 +221,15 @@ switch fixed_params.dom_vacc
         fixed_params.VES1 = 0.3;
         fixed_params.VES2 = 0.3;
 end
+
+% relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+k.orig = 0; kw.orig = 0;
+k.alpha = 0; k.beta = 0; k.delta = 0; k.omicron = 0;
+k.iota = 0; k.kappa = 0; k.gamma = 0;
+% waning asymptote
+kw.alpha = 0.098; kw.beta = 0.143; kw.delta = 0.08; kw.omicron = 0.44; 
+kw.iota = 0; kw.kappa = 0; kw.gamma = 0;
+
+fixed_params.k  = arrayfun(@(x)(k.(x)),  ["orig",fixed_params.var_names]);
+fixed_params.kw = arrayfun(@(x)(kw.(x)), ["orig",fixed_params.var_names]);
 end

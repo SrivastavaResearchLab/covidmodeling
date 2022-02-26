@@ -10,7 +10,6 @@ switch char(fixed_params.location)
                 param.t_trans = [99.998, 12.315, 96.6621, 28.4856, 35.3839, 100];
                 param.d2 = [1.00351];
                 
-                fixed_params.M = [225, 27, 1/40, 80];
                 fixed_params.Mmax = 130;
                 fixed_params.Mg = 15;
 
@@ -25,7 +24,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.5140 2.8683 2.7973 1.5170]; % IN
                 fixed_params.VE1V = [0.514 0.48 0.329 0.514];
                 fixed_params.VE2V = [0.661 0.824 0.598 0.661]; % gamma not sure (assume original strain)
-                fixed_params.VESV = [0.3 0.5 0.25 0.3];
+                fixed_params.VES1V = [0.3 0.5 0.25 0.3];
+                fixed_params.VES2V = [0.3 0.5 0.25 0.3];
                 
                 fixed_params.country_color = [1.0000 0.6000 0.2000];
 %                 fixed_params.country_color = [0.0706 0.5333 0.0275];
@@ -39,7 +39,6 @@ switch char(fixed_params.location)
                 param.t_trans = [63.9735, 99.2866, 49.9735, 26.2265, 83.8494];
                 param.d2 = [0.526345];
                 
-                fixed_params.M = [5,3,1/60,170];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 10;
                 fixed_params.vdate = datetime(["October 14, 2020","December 13, 2020","April 14, 2021"]);
@@ -49,7 +48,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.8185 2.1101 4.9264]; % DE % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
 %                 fixed_params.country_color = [.8667 0 0];
 %                 fixed_params.country_color = [1.0000 0.8078 0];
@@ -64,7 +64,6 @@ switch char(fixed_params.location)
                 param.t_trans = [75.5788, 98.4836, 53.2145, 29.0432, 92.0192, 12.8243];
                 param.d2 = [0.0573392];
                 
-                fixed_params.M = [4,1.2,1/50,120];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 5;
                 fixed_params.vdate = datetime(["November 3, 2020","November 27, 2020","March 15, 2021"]);
@@ -74,7 +73,8 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.7345 1.8756 3.3793]; % CA % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
                 
                 fixed_params.country_color = [1 0 0];
         end
@@ -87,7 +87,6 @@ switch char(fixed_params.location)
                 param.t_trans = [26.9674, 81.3655, 30.2808, 87.4284, 98.761];
                 param.d2 = [0.0265504];
                 
-                fixed_params.M = [5,3.5,1/40,55];
                 fixed_params.Mmax = 130;
                 fixed_params.Mg = 1;
                 fixed_params.vdate = datetime(["December 5, 2020","December 7, 2020","May 11, 2021"]);
@@ -97,7 +96,12 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [3.2188 3.7752 9.9908]; % BR
                 fixed_params.VE1V = 0.35*ones(1,3); % not sure (assume original strain)
                 fixed_params.VE2V = 0.66*ones(1,3); % not sure (assume original strain)
-                fixed_params.VESV = 0.3*ones(1,3);
+                fixed_params.VES1V = 0.3*ones(1,3);
+                fixed_params.VES2V = 0.3*ones(1,3);
+
+                % relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+                fixed_params.k = [0 0 0];
+                fixed_params.kw = [0 0 0]; % (waning asymptote)
                 
                 fixed_params.country_color = [0 0.6078 0.2275];
         end
@@ -110,18 +114,22 @@ switch char(fixed_params.location)
                 param.t_trans = [69.8812, 35.7662, 63.3059, 78.057, 74.1703, 85.3549, 30.3295, 54.1859];
                 param.d2 = [0.34508];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 10;
-                fixed_params.Mg = 5;
+                fixed_params.Mg = 6;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
                 fixed_params.vdate = datetime(["October 9, 2020","December 6, 2020","March 9, 2021","October 18, 2020"]);
-                fixed_params.dom_vacc = "Pfizer";
+                fixed_params.dom_vacc = "Pfizer";  
                 
-                fixed_params.var_names = ["alpha","gamma","delta","iota"];
+                fixed_params.var_names = ["alpha","gamma","delta","iota"]; % drop gamma, add omicron
                 fixed_params.dbeta = [1.8463 2.1801 4.0832 1.7868]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3 0.49];
                 fixed_params.VE2V = [0.94 0.84 0.88 0.94];
-                fixed_params.VESV = [0.8 0.5 0.65 0.8];
+                fixed_params.VES1V = [0.49 0.6 0.3 0.49];
+                fixed_params.VES2V = [0.8 0.5 0.65 0.8];
+
+                % relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+                fixed_params.k = [0 0 0 0 0];
+                fixed_params.kw = [0 0 0 0 0]; % (waning asymptote)
                 
                 fixed_params.country_color = [0.2353 0.2314 0.4314];
 %                 fixed_params.country_color = [0.6980 0.1333 0.2039];
@@ -139,7 +147,6 @@ switch char(fixed_params.location)
                 param.t_trans = [28.0269 30.6100 32.1123 37.7279 72.7676 80.6629 42.5569 42.8702];
                 param.d2 = [0.3282];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 20;
                 fixed_params.Mg = 3;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
@@ -150,62 +157,70 @@ switch char(fixed_params.location)
                 fixed_params.dbeta = [1.6711 2.1695 4.1445]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
+
+                % relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+                fixed_params.k = [0 0 0];
+                fixed_params.kw = [0 0 0]; % (waning asymptote)
                 
 %                 fixed_params.country_color = [0 0 0];
                 fixed_params.country_color = [0.0588 0.3922 0.8039];
         end
     case "Japan"
         switch nturn_dates
-            case 7
-                fixed_params.vdate = datetime(["December 25, 2020","January 6, 2021","March 28, 2021"]);
-                fixed_params.dom_vacc = "Pfizer";
             case 9
-                param.d1 = [2247.9 8055.1 1759.1 4133.6 1351.6 7646.6 3237.1 8042.2 2283.5 9423.8];
+                param.d1 = [2.2361e+03 8.4170e+03 1.6522e+03 4.2269e+03 1.3960e+03 7.9553e+03 3.1989e+03 8.1442e+03 2.1637e+03 9.9705e+03];
                 param.R0 = [3.3276];
-                param.turn_dates = [50.489 103.64 162.95 234.2 327.35 390.64 441.55 493.16 541.86];
-                param.t_trans = [15.446 54.34 54.191 50.49 42.693 26.993 38.558 14.293 25.739];
-                param.d2 = [0.2769];
+                param.turn_dates = [51.9135 102.1143 163.5499 233.0309 329.3993 389.5031 443.2176 493.1815 545.3961];
+                param.t_trans = [14.3542 56.8288 59.1253 50.5002 49.5630 30.1260 43.7560 14.6776 27.9043];
+                param.d2 = [0.1798];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 20;
                 fixed_params.Mg = 1;
 %                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
-                fixed_params.vdate = datetime(["December 2, 2020","October 6, 2020","April 9, 2021"]);
+                fixed_params.vdate = datetime(["December 3, 2020","September 7, 2020","April 7, 2021"]);
                 fixed_params.dom_vacc = "Pfizer";
                 
                 fixed_params.var_names = ["alpha","gamma","delta"];
-                fixed_params.dbeta = [2.3411 1.4546 4.7397]; % US % fit parameters
+                fixed_params.dbeta = [2.33 1.40 4.677]; % US % fit parameters
                 fixed_params.VE1V = [0.49 0.6 0.3];
                 fixed_params.VE2V = [0.94 0.84 0.88];
-                fixed_params.VESV = [0.8 0.5 0.65];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
+
+                % relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+                fixed_params.k = [0 0 0];
+                fixed_params.kw = [0 0 0]; % (waning asymptote)
                 
                 fixed_params.country_color = [0.7373 0 0.1765];
         end
         case "South Africa"
         switch nturn_dates
-            case 6
-                param.d1 = [100 160 240 300 390 440];
-                param.R0 = [3.3276];
-                param.turn_dates = [800 500 1200 400 1200 300 1500];
-                param.t_trans = [69.8812, 35.7662, 63.3059, 78.057, 74.1703, 85.3549, 30.3295, 54.1859];
-                param.d2 = [0.34508];
+            case 5
+                param.d1 = [3.6404 139.6798 12.3264 608.8031 167.7804 1.0164e+03];
+                param.R0 = [1.63];
+                param.turn_dates = [149.6928 242.3058 328.9866 449.3489 551.7741];
+                param.t_trans = [99.9999 43.7968 58.4621 50.1765 81.6247];
+                param.d2 = [0.4638];
                 
-                fixed_params.M = [8, 2, 1/20, 165];
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 5;
-%                 fixed_params.vdate = datetime(["September 23, 2020","December 1, 2020","March 23, 2021"]);
-                fixed_params.vdate = datetime(["October 9, 2020","December 6, 2020","March 9, 2021","October 18, 2020"]);
+                fixed_params.vdate = datetime(["September 9, 2020","November 6, 2020","March 17, 2021"]);
                 fixed_params.dom_vacc = "Pfizer";
                 
-                fixed_params.var_names = ["alpha","gamma","delta","iota"];
-                fixed_params.dbeta = [1.8463 2.1801 4.0832 1.7868]; % US % fit parameters
-                fixed_params.VE1V = [0.49 0.6 0.3 0.49];
-                fixed_params.VE2V = [0.94 0.84 0.88 0.94];
-                fixed_params.VESV = [0.8 0.5 0.65 0.8];
+                fixed_params.var_names = ["alpha","gamma","delta"];
+                fixed_params.dbeta = [1.50661 2.01169 4.12573]; % US % fit parameters
+                fixed_params.VE1V = [0.49 0.6 0.3];
+                fixed_params.VE2V = [0.94 0.84 0.88];
+                fixed_params.VES1V = [0.8 0.5 0.65];
+                fixed_params.VES2V = [0.8 0.5 0.65];
+
+                % relative reinfection rate (0 = no RI, 1 = no infection-induced immunity)
+                fixed_params.k = [0 0 0];
+                fixed_params.kw = [0 0 0]; % (waning asymptote)
                 
-                fixed_params.country_color = [0.2353 0.2314 0.4314];
-%                 fixed_params.country_color = [0.6980 0.1333 0.2039];
+                fixed_params.country_color = [0.8706 0.2196 0.1922];
         end
 end
 
@@ -213,14 +228,26 @@ switch fixed_params.dom_vacc
     case "Pfizer"
         fixed_params.VE1 = 0.8;
         fixed_params.VE2 = 0.95;
-        fixed_params.VES = 0.8;
+        fixed_params.VES1 = 0.8;
+        fixed_params.VES2 = 0.3;
     case "AstraZeneca"
         fixed_params.VE1 = 0.76;
         fixed_params.VE2 = 0.824;
-        fixed_params.VES = 0.5;
+        fixed_params.VES1 = 0.5;
+        fixed_params.VES2 = 0.3;
     case "Coronavac"
         fixed_params.VE1 = 0.35;
         fixed_params.VE2 = 0.66;
-        fixed_params.VES = 0.3;
+        fixed_params.VES1 = 0.3;
+        fixed_params.VES2 = 0.3;
 end
+
+k.alpha = 1;
+k.gamma = 1
+k.delta
+k.iota
+k.kappa
+
+fixed_params.var_names = ["alpha","gamma","delta"];
+fixed_params.k = arrayfun(@(x)(k.(x)),fixed_params.var_names);
 end

@@ -5,6 +5,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             disp_opts.combined_cases || disp_opts.combined_M || ...
             disp_opts.combined_alpha || disp_opts.variant_plot || ...
             disp_opts.check_variants || disp_opts.legend || ...
+            disp_opts.stacks_plot || ...
             disp_opts.combined_phi || disp_opts.all_figs
         
         colors = fixed_params.colors;
@@ -31,16 +32,19 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         % run simulation
         [t,y] = sim_SVIRD(param,fixed_params);
         
-        % reshape compartment array into matrix
+        % reshape compartment array into matrix (5 stacks: nUV,nV1,nV2,nVS1,nVS2)
         y = reshape(y,[size(y,1),5,size(y,2)/5]);
-        
-        % recover compartments: y(immunity #, compartment #)
-        nS = 1; nR = 2; nRW = 3; nD = 4; nI = 5:(5+n_var);
+
+        nS = 1; nD = 2; nI = 3:(3+n_var);
+        nR = (4+n_var):(4+2*n_var); nRW = (5+2*n_var):(5+3*n_var);
         nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 
-        S = y(:,nUV,nS); V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
-        R = y(:,nUV,nR); VR1 = y(:,nV1,nR); VR2 = y(:,nV2,nR);
-        RW = y(:,nUV,nRW); D = sum(y(:,:,nD),2);
+        S = y(:,nUV,nS); D = sum(y(:,:,nD),2);
+        V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
+        R = squeeze(sum(y(:,nUV,nR),3)); 
+        VR1 = squeeze(sum(y(:,nV1,nR),3)); 
+        VR2 = squeeze(sum(y(:,nV2,nR),3));
+        RW = squeeze(sum(y(:,nUV,nRW),3));
         I = squeeze(sum(y(:,:,nI(1)),2));
         Iv = squeeze(sum(y(:,:,nI(2:end)),2));
         VS1 = y(:,nVS1,nS); VSR1 = sum(y(:,nVS1,[nR nRW]),3);
@@ -155,7 +159,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             sum(y(:,nVS2,:),3), ... % Fully vaccinated, waning
             y(:,nUV,nS), ... % Unvaccinated, susceptible
             sum(y(:,nUV,[nI,nR]),3), ... % Unvaccinated, recovered
-            y(:,nUV,nRW)]; % Unvaccinated, recovered, waning
+            sum(y(:,nUV,nRW),3)]; % Unvaccinated, recovered, waning
 
         barv_daily = interp1(dt,barv,dt_daily);
         barf = bar(dt_daily,barv_daily,1,'stacked');
@@ -453,8 +457,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     if disp_opts.test_wane || disp_opts.all_figs
         fig=figure; hold on
 
-        ymat = zeros(5,5+length(fixed_params.dbeta));
-        nS = 1; nV1 = 2; nV1W = 4;
+        ymat = zeros(5,2+3*(n_var+1));
         ymat(nV1,nS) = 1; % initial conditions
 
         % reshape y array into row vector for ode45
@@ -475,7 +478,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
         % reshape compartment array into matrix
         yw = reshape(yw,[size(yw,1),5,size(yw,2)/5]);
-        V1_test = yw(:,nV1,nS); V1W_test = yw(:,nV1W,nS);
+        V1_test = yw(:,nV1,nS); V1W_test = yw(:,nVS1,nS);
 
         plot(tv,V1W_test,'r','DisplayName',"Waning")
         plot(tv,V1_test,'k','DisplayName',"Immunized")

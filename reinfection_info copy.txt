@@ -1,0 +1,24 @@
+Omicron:
+- https://www.nature.com/articles/d41586-022-00438-3
+"The reinfection risk was 16 times higher between mid-December last year and early January this year when Omicron dominated, than in the 7 months leading up to December when Delta was the dominant variant."
+
+Delta:
+- https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2787712#:~:text=This%20study%20found%20an%20incidence,linked%20to%20the%20Delta%20variant.
+[Among healthcare workers]: "In this cohort study of 4978 HCWs who were infected with SARS-CoV-2 from March 3, 2020, to June 18, 2021, the incidence density of reinfection was 7.26 per 100 person-years."
+
+- https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1005517/Technical_Briefing_19.pdf / https://www1.racgp.org.au/newsgp/clinical/delta-raises-covid-reinfection-risk-by-46-study
+"The authors write that ‘preliminary analysis of national surveillance data finds an increased risk of reinfection with Delta, compared to Alpha’, with the overall chances around 46% higher compared to the Alpha variant."
+"The risk of reinfection was not elevated for Delta if the primary infection was <180 days (adjusted odds ratio = 0.79, 95% CI 0.49 to1.28) but was higher for those with a prior infection ≥180 days earlier (adjusted odds ratio = 2.37, 95%CI 1.43 to 3.93)."
+
+Alpha:
+- https://www.thelancet.com/journals/lanhl/article/PIIS2666-7568(21)00253-1/fulltext
+[Reinfections among care home residents]: "There were 23 reinfections (ten confirmed, eight probable, five possible) in 656 previously infected individuals (366 staff and 290 residents), compared with 165 primary infections in 721 susceptible individuals (444 staff and 277 residents)."
+
+
+reinfections were about 1% of reported cases before mid-November (omicron), but now account for around 10%
+
+
+
+https://www.nejm.org/doi/10.1056/NEJMc2200133?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed
+this source reports all relative reinfection rates
+"The effectiveness of previous infection in preventing reinfection was estimated to be 90.2% (95% confidence interval [CI], 60.2 to 97.6) against the alpha variant, 85.7% (95% CI, 75.8 to 91.7) against the beta variant, 92.0% (95% CI, 87.9 to 94.7) against the delta variant, and 56.0% (95% CI, 50.6 to 60.9) against the omicron variant"
