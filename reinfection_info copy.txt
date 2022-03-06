@@ -22,3 +22,5 @@ reinfections were about 1% of reported cases before mid-November (omicron), but 
 https://www.nejm.org/doi/10.1056/NEJMc2200133?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed
 this source reports all relative reinfection rates
 "The effectiveness of previous infection in preventing reinfection was estimated to be 90.2% (95% confidence interval [CI], 60.2 to 97.6) against the alpha variant, 85.7% (95% CI, 75.8 to 91.7) against the beta variant, 92.0% (95% CI, 87.9 to 94.7) against the delta variant, and 56.0% (95% CI, 50.6 to 60.9) against the omicron variant"
+
+make dI plot a log scale

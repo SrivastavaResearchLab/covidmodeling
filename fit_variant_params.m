@@ -29,8 +29,7 @@ error0 = calc_variant_error(param_vec0,fixed_params);
 abs_tol = 1e-10;
 
 % plot error values during optimization
-options = optimset('PlotFcns',{@optimplotfval}, ...
-    'TolFun',abs_tol/error0,'TolX',inf);
+options = optimset('PlotFcns',{@optimplotfval});
 %     options = optimset('TolFun',abs_tol/error0,'TolX',inf);
 
 global min_RMSE

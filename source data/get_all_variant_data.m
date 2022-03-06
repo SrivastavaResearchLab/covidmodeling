@@ -1,6 +1,7 @@
 function fixed_params = get_all_variant_data(region, variant_file, fixed_params, plotc)
     % get data for the proportion of each variant over time in a given region
-    
+    inclusion_cutoff = 0.15;
+
     var_names = sheetnames(variant_file);
 
     for v = 2:length(var_names)
@@ -23,6 +24,14 @@ function fixed_params = get_all_variant_data(region, variant_file, fixed_params,
             raw_data.(var_names(v)) = v_data;
             
             nanx = isnan(v_data);
+            omit = find(~nanx);
+            omit = omit(diff(omit)>=7);
+            v_data(omit) = nan;
+
+            nanx = isnan(v_data);
+            omit = find(~nanx);
+            omit = omit(diff(omit)>=7);
+            v_data(omit) = nan;
 %             nanx = nanx | ()
             
             if sum(~nanx) <= 2
@@ -34,8 +43,14 @@ function fixed_params = get_all_variant_data(region, variant_file, fixed_params,
                 disp(size(v_data));
                 disp(size(t(~nanx)));
                 disp(size(t(nanx)));
+
+                nanx = isnan(v_data);
                 v_data(nanx) = interp1(t(~nanx), v_data(~nanx), t(nanx));
 
+                % replace last section of missing data with last reported
+                last_reported = find(~nanx,1,'last');
+                v_data(cumsum(~nanx)==sum(~nanx)) = v_data(last_reported);
+                
                 % replace first section of missing data with 0 (no variant)
                 nanx = isnan(v_data);
                 v_data(nanx) = 0;
@@ -45,22 +60,10 @@ function fixed_params = get_all_variant_data(region, variant_file, fixed_params,
         end
     end
     t = table2array(variant_sheet(1,3:end));
-    week = cellfun(@(x) str2double(x(end-1:end)),t,'UniformOutput',false);
-    year = cellfun(@(x) str2double(x(1:4)),t,'UniformOutput',false);
     
-    week = cell2mat(week);
-    year = cell2mat(year);
-    
-    t = datetime(year,1,1);
-    t = t - days(weekday(t)) + days(week*7);
-    
-    variant_data.t = t;
-    raw_data.t = t;
-    
-    % remove data entries for the 0th week (duplicate with 52nd week)
-    variant_data = structfun(@(x) x(week~=0),variant_data,'UniformOutput',false);
-    raw_data = structfun(@(x) x(week~=0),raw_data,'UniformOutput',false);
-    
+    variant_data.t = datetime(t);
+    raw_data.t = datetime(t);
+
     fixed_params.variant_data = variant_data;
     
     if plotc
@@ -73,6 +76,7 @@ function fixed_params = get_all_variant_data(region, variant_file, fixed_params,
             plot(variant_data.t,(variant_data.(var_name)),'DisplayName',var_name);
         end
         legend('location','northwest')
+        yline(inclusion_cutoff)
         xlabel('t')
         ylabel('reported variant proportion')
         title("processed variant proportions over time: " + region)
@@ -86,11 +90,26 @@ function fixed_params = get_all_variant_data(region, variant_file, fixed_params,
         fn = fieldnames(variant_data);
         n_vars = length(fn) - 1;
         
+        vars_include = region + " variants to include: ";
         for v = 1:n_vars
             var_name = fn{v};
             plot(raw_data.t,(raw_data.(var_name)),'o','DisplayName',var_name);
+            max_reported = max(raw_data.(var_name));
+            
+            if max_reported > inclusion_cutoff 
+                include = "**";
+                vars_include = vars_include + var_name + ", ";
+            else 
+                include = ""; 
+            end
+
+            disp("Maximum Reported Proportion ("+var_name+"): "+max_reported+include)
         end
+
+        disp(vars_include)
+
         legend('location','northwest')
+        yline(inclusion_cutoff)
         xlabel('t')
         ylabel('reported variant proportion, raw')
         axis tight

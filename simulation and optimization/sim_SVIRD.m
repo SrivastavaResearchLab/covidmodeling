@@ -11,8 +11,8 @@ start_dt = index2date(US_data,start_day,start_day);
 M = calc_M(fixed_params,start_dt);
 
 % indices for compartment referencing
-nS = 1; nD = 2; nI = 3:(3+n_var);
-nR = (4+n_var):(4+2*n_var); nRW = (5+2*n_var):(5+3*n_var);
+yix = fixed_params.yix;
+nS = yix.nS; nI = yix.nI; nR = yix.nR; nUV = yix.nUV;
 
 % define initial conditions
 start_inf = max(1,start_day-round(1/param.gamma(1)));
@@ -21,7 +21,6 @@ R0 = M*sum(fixed_params.US_data.average(1:start_inf))/N;
 S0 = 1 - I0 - R0;
 ymat = zeros(5,2+3*(n_var+1));
 
-nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
 ymat(nUV,nS) = S0; ymat(nUV,nR(1)) = R0; ymat(nUV,nI(1)) = I0; t = 0; % initial conditions
 
 % reshape y array into row vector for ode45

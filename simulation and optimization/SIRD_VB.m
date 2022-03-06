@@ -6,9 +6,9 @@ n_var = length(fixed_params.dbeta);
 % reshape compartment array into matrix (5 stacks: nUV,nV1,nV2,nVS1,nVS2)
 y = reshape(y,[5,numel(y)/5]);
 
-nS = 1; nD = 2; nI = 3:(3+n_var);
-nR = (4+n_var):(4+2*n_var); nRW = (5+2*n_var):(5+3*n_var);
-nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
+yix = fixed_params.yix;
+nS = yix.nS; nD = yix.nD; nI = yix.nI; nR = yix.nR; nRW = yix.nRW;
+nUV = yix.nUV; nV1 = yix.nV1; nV2 = yix.nV2; nVS1 = yix.nVS1; nVS2 = yix.nVS2;
 
 % set vaccination to zero if compartment is below this threshold
 vacc_threshold = 1e-6;

@@ -10,7 +10,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         
         colors = fixed_params.colors;
         brown=colors.brown; red=colors.red; gray=colors.gray;
-        gold=colors.gold; black=colors.black; blue=colors.blue;
+        gold=colors.gold; black=colors.black;
         country_color = fixed_params.country_color;
 
         US_data = fixed_params.US_data; N = fixed_params.N;
@@ -21,11 +21,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         all_countries = disp_opts.all_countries;
         abbrev = disp_opts.abbrev;
 
-        VE1 = fixed_params.VE1; VE2 = fixed_params.VE2;
-        VE1V = fixed_params.VE1V; VE2V = fixed_params.VE2V;
-        VES1 = fixed_params.VES1; VES1V = fixed_params.VES1V;
-        VES2 = fixed_params.VES2; VES2V = fixed_params.VES2V;
-        var_names = fixed_params.var_names;
+        var_names = ["original" fixed_params.var_names];
 
         n_var = length(fixed_params.dbeta);
 
@@ -35,20 +31,14 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         % reshape compartment array into matrix (5 stacks: nUV,nV1,nV2,nVS1,nVS2)
         y = reshape(y,[size(y,1),5,size(y,2)/5]);
 
-        nS = 1; nD = 2; nI = 3:(3+n_var);
-        nR = (4+n_var):(4+2*n_var); nRW = (5+2*n_var):(5+3*n_var);
-        nUV = 1; nV1 = 2; nV2 = 3; nVS1 = 4; nVS2 = 5;
+        % create variables for indexing compartment array
+        yix = fixed_params.yix;
+        nS = yix.nS; nD = yix.nD; nI = yix.nI; nR = yix.nR; nRW = yix.nRW;
+        nUV = yix.nUV; nV1 = yix.nV1; nV2 = yix.nV2; nVS1 = yix.nVS1; nVS2 = yix.nVS2;
 
-        S = y(:,nUV,nS); D = sum(y(:,:,nD),2);
-        V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
-        R = squeeze(sum(y(:,nUV,nR),3)); 
-        VR1 = squeeze(sum(y(:,nV1,nR),3)); 
-        VR2 = squeeze(sum(y(:,nV2,nR),3));
-        RW = squeeze(sum(y(:,nUV,nRW),3));
+        D = sum(y(:,:,nD),2);
         I = squeeze(sum(y(:,:,nI(1)),2));
         Iv = squeeze(sum(y(:,:,nI(2:end)),2));
-        VS1 = y(:,nVS1,nS); VSR1 = sum(y(:,nVS1,[nR nRW]),3);
-        VS2 = y(:,nVS2,nS); VSR2 = sum(y(:,nVS2,[nR nRW]),3);
 
         V = sum(y(:,[nV1 nV2 nVS1 nVS2],[nS nI nR nRW]),[2 3]);
 
@@ -59,30 +49,19 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         % calculate parameters, beta, alpha, and new cases over time
         param_t = vary_params(t,param);
         b = calc_beta(V, I+sum(Iv,2), param_t);
-        dbeta = fixed_params.dbeta;
-        new_cases = S.*(b.*I + b.*sum(dbeta.*Iv,2)) + ...
-            V1.*((1-VE1).*b.*I + b.*sum((1-VE1V).*dbeta.*Iv,2)) + ...
-            V2.*((1-VE2).*b.*I + b.*sum((1-VE2V).*dbeta.*Iv,2)) + ...
-            VS1.*((1-VES1).*b.*I + b.*sum((1-VES1V).*dbeta.*Iv,2)) + ...
-            VS2.*((1-VES2).*b.*I + b.*sum((1-VES2V).*dbeta.*Iv,2));
-        bv = b.*dbeta;
-        new_casesv = S.*(bv.*Iv) + ...
-            V1.*(bv.*(1-VE1V).*Iv) + ...
-            V2.*(bv.*(1-VE2V).*Iv) + ...
-            VS1.*(bv.*(1-VES1V).*Iv) + ...
-            VS2.*(bv.*(1-VES2V).*Iv);
+        
+        [inflow,~] = calc_flows(t,y,param,fixed_params);
+        new_cases = squeeze(sum(inflow(:,:,nI),2));
         new_cases = new_cases .* N;
-        new_casesv = new_casesv .* N;
+        
         [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dt_daily);
 
-        S = S.*N; V1 = V1.*N; V2 = V2.*N; R = R.*N; RW = RW.*N; D = D.*N;
-        I = I.*N; VR1 = VR1.*N; VS1 = VS1.*N; VR2 = VR2.*N; VS2 = VS2.*N; 
-        Iv = Iv.*N; VSR2 = VSR2.*N; VSR1 = VSR1.*N;
+        D = D.*N; I = I.*N; Iv = Iv.*N;
         
         M = calc_M(fixed_params,dt);
         M_daily = calc_M(fixed_params,dt_daily);
 
-        new_cases_perday = interp1(dt,new_cases,dt_daily);
+        new_cases_perday = interp1(dt,sum(new_cases,2),dt_daily);
 
         disp(datetime(datestr(datenum(US_data.date(start_day))+[0 end_day-start_day])))
         fprintf(1,'%s:\nActual Cases: %g%%\nActual Deaths: %g\n',...
@@ -101,7 +80,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             '-.','Color',brown,'DisplayName','7-day average','LineWidth',8)
         plot(US_data.date(start_day:end_cases),US_data.average(start_day:end_cases),...
             '-.','Color',gold,'DisplayName','7-day average','LineWidth',8)
-        plot(dt,new_cases,'-','Color',red,'DisplayName','Model Prediction',...
+        plot(dt,sum(new_cases,2),'-','Color',red,'DisplayName','Model Prediction',...
             'LineWidth',8)
         ylabel("Actual Cases")
         
@@ -223,7 +202,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     if disp_opts.combined_cases || disp_opts.all_figs
         figure(disp_opts.combined_cases_fig);
 
-        plot(dt,100*new_cases/N,'DisplayName',loc_name,...
+        plot(dt,100*sum(new_cases,2)/N,'DisplayName',loc_name,...
             'LineWidth',8,'Color',country_color)
         
         axis tight
@@ -265,7 +244,6 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             saveas(disp_opts.combined_M_fig,"./fig/combined_M.fig")
             saveas(disp_opts.combined_M_fig,"./eps/combined_M.eps",'epsc')
         end
-        
     end
 
     if disp_opts.combined_alpha || disp_opts.all_figs
@@ -283,7 +261,6 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax = gca; ax.YRuler.Exponent = 0; ytickformat('percentage');
         ax.LineStyleOrderIndex = ax.ColorOrderIndex;
         ax.FontSize = 45;
-        
 
         subplot(3,1,2); hold on
         plot(dt_daily,100*alpha2,'DisplayName',loc_name,'Color',country_color)
@@ -323,19 +300,18 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         start_var = find(Iv(:,1),1,'first');
         
         fig4=figure; hold on;
-        Ipl = I(start_var:end); Ivpl = Iv(start_var:end,:);
-        barv=[Ipl,Ivpl]./sum([Ipl,Ivpl],2).*max([Ipl Ivpl],[],'all');
+        Ipl = [I(start_var:end) Iv(start_var:end,:)];
+        barv=Ipl./sum(Ipl,2).*max(Ipl,[],'all');
         barv_daily = interp1(dt(start_var:end),barv,dt_daily);
         barf = bar(dt_daily,barv_daily,'stacked','BarWidth',1);
         barf(1).FaceColor = gray; barf(1).HandleVisibility = 'off';
-        plot(dt(start_var:end),Ipl,':','Color',red,'DisplayName','Infected','LineWidth',8)
         
-        for i=1:n_var
-            f = (n_var+1-i)/(n_var+1);
-            barf(i+1).FaceColor = gray*f;
-            barf(i+1).DisplayName = 'Infected ('+var_names(i)+')';
+        for i=1:(n_var+1)
+            f = (n_var+1-i)/n_var;
+            barf(i).FaceColor = gray*f;
+            barf(i).DisplayName = 'Infected ('+var_names(i)+')';
 %             barf(i+1).HandleVisibility = 'off';
-            plot(dt(start_var:end),Iv(start_var:end,i),'--','Color',red*f,'DisplayName','Infected ('+var_names(i)+')','LineWidth',8)
+            plot(dt(start_var:end),Ipl(:,i),'--','Color',red*f,'DisplayName','Infected ('+var_names(i)+')','LineWidth',8)
         end
         
         axis tight;
@@ -359,10 +335,9 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         
         newcases_weekly = interp1(US_data.date(start_day:end_cases), ...
             US_data.average(start_day:end_cases).*M_daily,t_weekly);
-        new_casesog = new_cases - sum(new_casesv,2);
         
         og_prop = 1;
-        for name=var_names
+        for name=var_names(2:end)
             og_prop = og_prop - variant_data.(name);
         end
         
@@ -370,27 +345,28 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         
         sgtitle(loc_name,'FontSize',32)
         
-        subplot(1+n_var,1,1); hold on
-        bar(US_data.date(start_day:end_cases),US_data.average(start_day:end_cases).*M_daily.*og_prop_daily,...
-            'FaceColor',([86 92 97]/255 + 2)/3,'EdgeColor','none')
-        plot(dt,new_casesog,':','Color',[86 92 97]/255,'LineWidth',8)
-        axis tight; set(gca,'XTickLabel',[])
-        ax=gca; ax.YRuler.Exponent = 0; % remove scientific notation
-        yyaxis right; ylabel('WT','color',[0 0 0]) % label variants on right of plot (black text)
-        set(gca,'YTickLabel',[])
+        variant_colors = [86 92 97 ; 
+            200 16 46 ; 134 38 51 ; 0 58 112 ; 50 240 100] ./ 255;
         
-        variant_colors = [200 16 46 ; 134 38 51 ; 0 58 112 ; 50 240 100] ./ 255;
-        
-        for var_i = 1:n_var
-            subplot(1+n_var,1,1+var_i); hold on
-            bar(t_weekly,variant_data.(var_names(var_i)).*newcases_weekly,1,'FaceColor',(variant_colors(var_i,:) + 2)/3,'EdgeColor','none')
-            plot(dt,new_casesv(:,var_i),':','Color',variant_colors(var_i,:),'LineWidth',8)
+        for var_i = 1:(n_var+1)
+            subplot(1+n_var,1,var_i); hold on
+            if var_i == 1 % original strain
+                bar(US_data.date(start_day:end_cases), ...
+                    US_data.average(start_day:end_cases).*M_daily.*og_prop_daily, ...
+                    'FaceColor',(variant_colors(var_i,:) + 2)/3,'EdgeColor','none')
+            else
+                bar(t_weekly,variant_data.(var_names(var_i)).*newcases_weekly,1, ...
+                    'FaceColor',(variant_colors(var_i,:) + 2)/3,'EdgeColor','none')
+                xline(fixed_params.vdate(var_i-1))
+            end
+
+            plot(dt,new_cases(:,var_i),':','Color',variant_colors(var_i,:),'LineWidth',8)
+
             axis tight; xl = xlim; xlim([min(dt),xl(2)]); 
             ax=gca; ax.YRuler.Exponent = 0; % remove scientific notation
             yyaxis right; ylabel(var_names(var_i),'color',[0 0 0]) % label variants on right of plot (black text)
             set(gca,'YTickLabel',[])
-            
-            xline(fixed_params.vdate(var_i))
+
             xTick = get(gca,'XTickLabel'); set(gca,'XTickLabel',[])
         end
         set(gca,'XTickLabel',xTick) % label only bottom subplot's xaxis

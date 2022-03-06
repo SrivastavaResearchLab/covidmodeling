@@ -4,7 +4,7 @@ function sensitivity_plots(param, fixed_params, disp_opts)
     US_data = fixed_params.US_data; N = fixed_params.N;
     start_day = fixed_params.start_day; end_day = fixed_params.end_day;
     
-    var_names = fixed_params.var_names;
+    var_names = ["original" fixed_params.var_names];
     
     n_var = length(fixed_params.dbeta);
     
@@ -157,125 +157,80 @@ function sensitivity_plots(param, fixed_params, disp_opts)
         red = [255 0 0]/255;
         blue = [0 150 255]/255;
         
-        n_tests = 2; % number of tests
+        n_tests = 2; % number of sensitivity conditions in each direction
         
-        for v = 1:3
-        for p = 1:2 %[dbeta,gamma_var,vdates]
-            plot_title = fixed_params.location + "_" + string(v) + "_";
-            if p == 1
-                dist = 0.05; % distance between tests
-                plot_title = plot_title + "beta_";
-            elseif p == 2
-                dist = 4;
-                plot_title = plot_title + "gamma_";
-            elseif p == 3
-                dist = 5;
-                plot_title = plot_title + "vdate_";
-            end
+        for v = ["alpha","delta"] % variant to do sensitivity on
+            sens_vi = find(fixed_params.var_names == v); % for indexing
+        for p = ["dbeta","gamma","vdate"] % sensitivity parameter
+
         og_dbeta = fixed_params.dbeta;
         og_gamma_var = fixed_params.gamma_var;
         og_vdate = fixed_params.vdate;
         
         fig = figure;
         for n = -n_tests:n_tests
-            if p == 1
-                fixed_params.dbeta(v) = dbeta(v) + n*dist;
-            elseif p == 2
-                fixed_params.gamma_var(v) = 1/(1/gamma_var(v) + n*dist);
-            elseif p == 3
-                fixed_params.vdate(v) = vdate + n*dist;
+            switch p
+                case "dbeta"
+                    fixed_params.dbeta(sens_vi) = og_dbeta(sens_vi)*(1+n*0.05);
+                    sgtitle("d\beta")
+                case "gamma"
+                    fixed_params.gamma_var(sens_vi) = 1/(1/og_gamma_var(sens_vi) + n*4);
+                    sgtitle("gamma_{" + v + "}","interpreter","latex")
+                case "vdate"
+                    fixed_params.vdate(sens_vi) = og_vdate(sens_vi) + n*10;
+                    sgtitle(" transmission start date")
             end
             
             frac = n/n_tests;
 
             [t,y] = sim_SVIRD(param,fixed_params);
-
-            n_vars = length(fixed_params.dbeta);
             
             % reshape compartment array into matrix
-            y = reshape(y,[size(y,1),4,size(y,2)/4]);
+            y = reshape(y,[size(y,1),5,size(y,2)/5]);
             
-            % recover compartments: y(immunity #, compartment #)
-            nS = 1; nR = 2; nD = 3; nI = 4:(4+n_vars);
-            nUV = 1; nV1 = 2; nV2 = 3; nVS = 4;
-
-            S = y(:,nUV,nS); V1  = y(:,nV1,nS); V2  = y(:,nV2,nS);
-            R = y(:,nUV,nR); VR1 = y(:,nV1,nR); VR2 = y(:,nV2,nR);
-            D = sum(y(:,:,nD),2);
-            I = squeeze(sum(y(:,:,nI(1)),2));
-            Iv = squeeze(sum(y(:,:,nI(2:end)),2));
-            VS2 = y(:,nVS,nS); VSR2 = y(:,nVS,nR);
-            
-            V = sum(y(:,[nV1 nV2 nVS],[nS nI nR]),[2 3]);
-
-            param_t = vary_params(t,param);
+            % create variables for indexing compartment array
+            yix = fixed_params.yix; nI = yix.nI;
 
             % convert t to datetime in same timeframe
             dt = index2date(US_data,start_day,t);
 
-            % calculate parameters, beta, and new cases over time
-            b = calc_beta(V, I+sum(Iv,2), param_t);
-            dbeta = fixed_params.dbeta; bv = b*dbeta;
-            VE1 = fixed_params.VE1; VE2 = fixed_params.VE2;
-            VE1V = fixed_params.VE1V; VE2V = fixed_params.VE2V;
-
-            new_cases = S.*(b.*I + b.*sum(dbeta.*Iv,2)) + ...
-                V1.*((1-VE1).*b.*I + b.*sum((1-VE1V).*dbeta.*Iv,2)) + ...
-                V2.*((1-VE2).*b.*I + b.*sum((1-VE2V).*dbeta.*Iv,2));
-            new_casesv = S.*(bv.*Iv) + ...
-                V1.*(b.*(1-VE1V).*dbeta.*Iv) + ...
-                V2.*(b.*(1-VE2V).*dbeta.*Iv);
+            % calculate new cases over time
+            [inflow,outflow] = calc_flows(t,y,param,fixed_params);
+            new_cases = squeeze(sum(inflow(:,:,nI),2));
             new_cases = new_cases .* fixed_params.N;
-            new_casesv = new_casesv .* fixed_params.N;
-
-            new_casesog = new_cases - sum(new_casesv,2);
 
             rf = abs(min(0,frac)); bf = max(0,frac);
             col = rf*red + bf*blue;
             
-            subplot(4,1,1); hold on
-            if p==1
-                title("d\beta")
-            elseif p==2
-                title("gamma_{var}")
-            elseif p==3
-                title("transmission start date")
+            for var_i = 1:(n_var+1)
+                subplot(n_var+1,1,var_i); hold on
+                plot(dt,new_cases(:,var_i),'Color',col,'LineWidth',8*(2-abs(frac))/2);
+                axis tight
+                ylabel(var_names(var_i));
+                
+                if var_i > 1
+                    xline(fixed_params.vdate(var_i-1))
+                end
+
+                if sens_vi == var_i-1
+                    xline(fixed_params.vdate(sens_vi),'color',col)
+                end
             end
-            plot(dt,new_casesog,'Color',col,'LineWidth',8*(2-abs(frac))/2);
-            axis tight
-            ylabel('WT')
-
-            subplot(4,1,2); hold on
-            plot(dt,new_casesv(:,1),'Color',col,'LineWidth',8*(2-abs(frac))/2);
-            axis tight
-            ylabel('Alpha'); xline(fixed_params.vdate(1))
-
-            subplot(4,1,3); hold on
-            plot(dt,new_casesv(:,2),'Color',col,'LineWidth',8*(2-abs(frac))/2);
-            axis tight
-            ylabel('Gamma'); xline(fixed_params.vdate(2))
-
-            subplot(4,1,4); hold on
-            plot(dt,new_casesv(:,3),'Color',col,'LineWidth',8*(2-abs(frac))/2);
-            axis tight
-            ylabel('Delta'); xline(fixed_params.vdate(3))
             
-            set(subplot(4,1,v+1),'Color',[0.96,0.91,0.56])
-%             subplot(4,1,v+1)
-%             ylabel("variant")
+            set(subplot(n_var+1,1,sens_vi+1),'Color',[0.96,0.91,0.56])
             
             drawnow
             
             % reset variables that were changed for plotting
-            dbeta = og_dbeta;
-            gamma_var = og_gamma_var;
-            vdate = og_vdate;
+            fixed_params.dbeta = og_dbeta;
+            fixed_params.gamma_var = og_gamma_var;
+            fixed_params.vdate = og_vdate;
         end
         
         if disp_opts.save_figs
-            saveas(fig,"./png/beta_gamma_sensitivitymin" + string(v) + string() + ".png")
-            saveas(fig,"./fig/beta_gamma_sensitivitymin" + string(v) + string(fixed_params.location) + ".fig")
-            saveas(fig,"./eps/beta_gamma_sensitivitymin" + string(v) + string(fixed_params.location) + ".eps",'epsc')
+            saveas(fig,"./png/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".png")
+            saveas(fig,"./fig/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".fig")
+            saveas(fig,"./eps/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".eps",'epsc')
         end
         end
         end

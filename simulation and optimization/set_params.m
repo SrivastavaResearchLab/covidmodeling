@@ -18,11 +18,18 @@ param.R0 = 3;
 [param,fixed_params] = saved_params(fixed_params, nturn_dates, param);
 
 % variant characteristics
-fixed_params.mu_var = param.mu * ones(1,length(fixed_params.dbeta));
-fixed_params.gamma_var = param.gamma * ones(1,length(fixed_params.dbeta));
+n_var = length(fixed_params.dbeta);
+fixed_params.mu_var = param.mu * ones(1,n_var);
+fixed_params.gamma_var = param.gamma * ones(1,n_var);
 
 % get selected variant's data from GISAID
 fixed_params = get_variant_data(var_data, fixed_params);
+
+% establish indexing for compartment array
+yix.nS = 1; yix.nD = 2; yix.nI = 3:(3+n_var);
+yix.nR = (4+n_var):(4+2*n_var); yix.nRW = (5+2*n_var):(5+3*n_var);
+yix.nUV = 1; yix.nV1 = 2; yix.nV2 = 3; yix.nVS1 = 4; yix.nVS2 = 5;
+fixed_params.yix = yix;
 
 if fixed_params.optimize_params
     if fixed_params.append_refit_params || fixed_params.append_params
@@ -68,7 +75,7 @@ if fixed_params.optimize_params
     if fixed_params.calc_variants
         var_param.dbeta = fixed_params.dbeta;
         var_paramLB.dbeta = zeros(1,length(var_param.dbeta));
-        var_paramUB.dbeta = 10*ones(1,length(var_param.dbeta));
+        var_paramUB.dbeta = 30*ones(1,length(var_param.dbeta));
 %         var_paramLB.dbeta = fixed_params.dbeta;
 %         var_paramUB.dbeta = fixed_params.dbeta;
         

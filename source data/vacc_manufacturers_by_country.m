@@ -1,7 +1,7 @@
 close all
 vacc_data  = 'vaccinations-by-manufacturer.xlsx';
 vacc_data = readtable(vacc_data);
-for region = ["United States","India","Brazil","Germany","South Korea","South Africa"]
+for region = ["Brazil","Colombia","Argentina","Peru"]
     disp(region)
     figure; hold on
     selected = ismember(string(table2array(vacc_data(:,1))),region);

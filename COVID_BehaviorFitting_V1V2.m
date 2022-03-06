@@ -4,11 +4,11 @@ tic
 addpath('helper functions','source data',...
     'plotting functions','simulation and optimization')
 
-JHU_data = 'global covid cases jan19.xlsx';
+JHU_data = 'global covid cases feb26.xlsx';
 pop_file = 'global population data.xlsx';
-vacc_file = 'vaccinations jan19.xlsx';
-test_file = 'daily_tests data jan19.xlsx';
-variant_file = 'gisaid_variants jan19.xlsx';
+vacc_file = 'vaccinations feb26.xlsx';
+test_file = 'daily_tests data feb26.xlsx';
+variant_file = 'gisaid_variants feb26.xlsx';
 new_data = 0;  % 1 to download above files, 0 to check if data already loaded
 
 % Set default plot settings
@@ -28,24 +28,24 @@ fixed_params.retrospective_study = 0;
 
 % set display options
 disp_opts.print_params = 0; disp_opts.fname="";
-disp_opts.SVEIRD_plot = 1;
-disp_opts.stacks_plot = 1;
+disp_opts.SVEIRD_plot = 0;
+disp_opts.stacks_plot = 0;
 disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;
 disp_opts.combined_cases = 0;
 disp_opts.combined_M = 0;
 disp_opts.combined_alpha = 0;
-disp_opts.variant_plot = 0; % variant proportions over time
-
-disp_opts.bgvar_sensitivity = 0;
-disp_opts.beta_gamma_sensitivity = 0;
-disp_opts.var_params_plots = 0;
 disp_opts.check_variants = 1; % reported/predicted variants over time
+
+disp_opts.variant_plot = 0; % variant proportions over time
+disp_opts.bgvar_sensitivity = 0; % RMSE as function of (beta,gamma)
+disp_opts.beta_gamma_sensitivity = 0; % grid of variant curves by (beta,gamma)
+disp_opts.var_params_plots = 0; % sensitivity on each variant parameter
 disp_opts.combined_phi = 0; % dbeta*VE for each variant/dosage
 disp_opts.combined_phi3d = 0; % dbeta*VE for each variant/dosage
 
-disp_opts.test_wane = 1; % test simulation with only vaccinations (no infections)
+disp_opts.test_wane = 0; % test simulation with only vaccinations (no infections)
 
 disp_opts.legend = 0;
 disp_opts.all_figs = 0;
@@ -59,13 +59,13 @@ loc_list.US = 'United States'; % title for legend
 pop_names.US = "United States of America"; % name in UN population spreadsheet
 JHU_names.US = "US"; % location name in JHU spreadsheet
 var_names.US = "USA";
-td_list.US = 8;
+td_list.US = 9;
 
 loc_list.IN = 'India';
-td_list.IN = 6;
+td_list.IN = 7;
 
 loc_list.DE = 'Germany';
-td_list.DE = 5;
+td_list.DE = 7;
 
 loc_list.CA = 'Canada';
 td_list.CA = 6;
@@ -75,18 +75,18 @@ td_list.BR = 5;
 
 loc_list.KR = 'South Korea';
 pop_names.KR = "Republic of Korea";
-JHU_names.KR = ["Korea, South"];
+JHU_names.KR = "Korea, South";
 td_list.KR = 8;
 
 loc_list.JP = 'Japan';
-td_list.JP = 9;
+td_list.JP = 11;
 
 loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-fn = {'US'};
-% fn = {'US','DE','BR','IN','KR','ZA'};
+% fn = {'DE'}; %ZA,DE
+fn = {'US','DE','IN','JP','ZA'}; %BR
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 

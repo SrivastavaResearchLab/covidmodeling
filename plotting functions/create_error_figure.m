@@ -9,9 +9,9 @@ function fixed_params = create_error_figure(fixed_params)
     n_vars = length(fixed_params.dbeta);
     var_names = fixed_params.var_names;
 
-    fid=figure; fixed_params.fid = fid; hold on
+    fid=figure; fixed_params.errorfig = fid; hold on
     
-    set(0, 'CurrentFigure', fixed_params.fid);
+    set(0, 'CurrentFigure', fixed_params.errorfig);
     
     if fixed_params.calc_variants
         variant_data = fixed_params.variant_data;
@@ -35,7 +35,7 @@ function fixed_params = create_error_figure(fixed_params)
         axis tight; xl = xlim;
         set(gca,'XTickLabel',[])
         ax=gca; ax.YRuler.Exponent = 0; % remove scientific notation
-        yyaxis right; ylabel('WT','color',[0 0 0]) % label variants on right of plot (black text)
+        yyaxis right; ylabel('original','color',[0 0 0]) % label variants on right of plot (black text)
         set(gca,'YTickLabel',[])
 
         variant_colors = [200 16 46 ; 134 38 51 ; 0 58 112 ; 50 240 100] ./ 255;

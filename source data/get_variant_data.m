@@ -24,6 +24,17 @@ function fixed_params = get_variant_data(var_data, fixed_params)
             v_data = variant_sheet(selected:(selected+1),:);
             v_data = cell2mat(v_data{:,3:end});
             v_data = v_data(1,:)./v_data(2,:);
+
+            % remove points where data was not collected for the next 7 days (twice)
+            nanx = isnan(v_data);
+            omit = find(~nanx);
+            omit = omit(diff(omit)>=7);
+            v_data(omit) = nan;
+
+            nanx = isnan(v_data);
+            omit = find(~nanx);
+            omit = omit(diff(omit)>=7);
+            v_data(omit) = nan;
             
             % interpolate values where no data was collected
             nanx = isnan(v_data);
@@ -32,28 +43,34 @@ function fixed_params = get_variant_data(var_data, fixed_params)
                 v_data(nanx) = interp1(t(~nanx), v_data(~nanx), t(nanx));
             end
             
+            % replace last section of missing data with last reported
+            nanx = isnan(v_data);
+            last_reported = find(~nanx,1,'last');
+            v_data(cumsum(~nanx)==sum(~nanx)) = v_data(last_reported);
+
             % replace first section of missing data with 0 (no variant)
             nanx = isnan(v_data);
             v_data(nanx) = 0;
             
             variant_data.(var_names(v)) = v_data;
+            if v == 1
+                vsum=v_data;
+            else
+                vsum = vsum + v_data;
+            end
         end
         t = table2array(variant_sheet(1,3:end));
     end
     
-    week = cellfun(@(x) str2double(x(end-1:end)),t,'UniformOutput',false);
-    year = cellfun(@(x) str2double(x(1:4)),t,'UniformOutput',false);
-    
-    week = cell2mat(week);
-    year = cell2mat(year);
-    
-    t = datetime(year,1,1);
-    t = t - days(weekday(t)) + days(week*7);
-    
-    variant_data.t = t;
+    % normalize all variant's reported data (should never sum > 1)
+    for v = 1:length(var_names)
+        variant_data.(var_names(v)) = variant_data.(var_names(v))./max(vsum,1);
+    end
+
+    variant_data.t = datetime(table2array(variant_sheet(1,3:end)));
     
     % remove data entries for the 0th week (duplicate with 52nd week)
-    variant_data = structfun(@(x) x(week~=0),variant_data,'UniformOutput',false);
+%     variant_data = structfun(@(x) x(week~=0),variant_data,'UniformOutput',false);
     
     fixed_params.variant_data = variant_data;
 end
