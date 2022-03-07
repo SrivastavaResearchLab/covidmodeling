@@ -75,7 +75,7 @@ if fixed_params.plot_optim & (RMSE < min_RMSE)
     axis tight
     
 %     if fixed_params.show_trans
-%         show_trans(US_data,start_day,param)
+%         show_trans(US_data,start_day,param,fixed_params)
 %     end
     
     variant_colors = [200 16 46 ; 134 38 51 ; 0 58 112 ; 50 240 100] ./ 255;

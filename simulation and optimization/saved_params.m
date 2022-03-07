@@ -3,31 +3,24 @@ function [param,fixed_params] = saved_params(fixed_params, nturn_dates, param)
 switch char(fixed_params.location)
     case "India"
         switch nturn_dates
-            case 7
-                param.d1 = [800, 10.028, 16.411, 30.757, 5.2034, 28.9787, 2785.06, 754.207];
-                param.R0 = 4.26513;
-                param.turn_dates = [64.6794, 145.785, 241.184, 345.599, 384.612, 469.651, 588.844];
-                param.t_trans = [99.2163, 13.0736, 97.2638, 29.0032, 36.4126, 99.9978, 53.8345];
-                param.d2 = [0.786196];
+            case 6
+                param.d1 = [58.5769, 7.07533, 72.261, 158.452, 352.52, 6300.54, 2612.63];
+                param.R0 = [1.68867];
+                param.turn_dates = [48.6426, 159.067, 204.131, 334.954, 449.768, 707.316];
+                param.t_trans = [70.7179, 16.1979, 55.878, 26.4168, 91.0241, 33.3104];
+                param.d2 = [0.610076];
                 
-                fixed_params.Mmax = 130;
-                fixed_params.Mg = 15;
-%                 fixed_params.Mmax = 10;
-%                 fixed_params.Mg = 10;
+%                 fixed_params.Mmax = 130;
+%                 fixed_params.Mg = 15;
+                fixed_params.Mmax = 20;
+                fixed_params.Mg = 10;
 
                 fixed_params.dom_vacc = "AstraZeneca";
 %                 fixed_params.vdate = datetime(["December 29, 2020","February 17, 2021","October 5, 2020"]); first reported
-                fixed_params.vdate = datetime(["June 13, 2020","January 6, 2021","June 10, 2020","December 1, 2021"]);
-                
-%                 fixed_params.var_names = ["alpha","gamma","delta"];
-%                 fixed_params.dbeta = [1.51223 3.01933 2.62173]; % IN % fit parameters
+                fixed_params.vdate = datetime(["October 27, 2020","February 14, 2021","November 13, 2020","November 6, 2021"]);
                 
                 fixed_params.var_names = ["alpha","delta","kappa","omicron"];
-                fixed_params.dbeta = [1.7570 3.9890 1.7564 8]; % IN
-%                 fixed_params.VE1V = [0.514 0.329 0.514 .3];
-%                 fixed_params.VE2V = [0.661 0.598 0.661 .5]; % gamma not sure (assume original strain)
-%                 fixed_params.VES1V = [0.3 0.25 0.3 .2];
-%                 fixed_params.VES2V = [0.3 0.25 0.3 .1];
+                fixed_params.dbeta = [2.1052 5.0006 2.2626 11.8772]; % IN
                 
                 fixed_params.country_color = [1.0000 0.6000 0.2000];
 %                 fixed_params.country_color = [0.0706 0.5333 0.0275];
@@ -48,13 +41,7 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["alpha","delta","omicron"];
                 fixed_params.dbeta = [1.5888 4.5 8.2]; % DE % fit parameters
-%                 fixed_params.VE1V = [0.49 0.3 .3];
-%                 fixed_params.VE2V = [0.94 0.88 .5];
-%                 fixed_params.VES1V = [0.8 0.65 .1];
-%                 fixed_params.VES2V = [0.8 0.65 .2];
-                
-%                 fixed_params.country_color = [.8667 0 0];
-%                 fixed_params.country_color = [1.0000 0.8078 0];
+
                 fixed_params.country_color = [0 0 0];
         end
     case "Canada"
@@ -73,10 +60,6 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["alpha","gamma","delta","omicron"];
                 fixed_params.dbeta = [1.7345 1.8756 3.3793,6]; % CA % fit parameters
-%                 fixed_params.VE1V = [0.49 0.6 0.3 .3];
-%                 fixed_params.VE2V = [0.94 0.84 0.88 .5];
-%                 fixed_params.VES1V = [0.8 0.5 0.65 .1];
-%                 fixed_params.VES2V = [0.8 0.5 0.65 .2];
                 
                 fixed_params.country_color = [1 0 0];
         end
@@ -96,10 +79,6 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["zeta","gamma","delta","omicron"]; % zeta
                 fixed_params.dbeta = [1.8 2.5 9.9908,20]; % BR
-%                 fixed_params.VE1V = 0.35*ones(1,4); % not sure (assume original strain)
-%                 fixed_params.VE2V = 0.66*ones(1,4); % not sure (assume original strain)
-%                 fixed_params.VES1V = 0.3*ones(1,4);
-%                 fixed_params.VES2V = 0.3*ones(1,4);
                 
                 fixed_params.country_color = [0 0.6078 0.2275];
         end
@@ -120,13 +99,8 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["alpha","delta","iota","omicron"]; % epsilon
                 fixed_params.dbeta = [1.8007 4.1604 1.6899 21.7992]; % US % fit parameters
-%                 fixed_params.VE1V = [0.49 0.3 0.49 .3];
-%                 fixed_params.VE2V = [0.94 0.88 0.94 .5];
-%                 fixed_params.VES1V = [0.49 0.6 0.3 0.1];
-%                 fixed_params.VES2V = [0.8 0.5 0.65 .1];
                 
                 fixed_params.country_color = [0.2353 0.2314 0.4314];
-%                 fixed_params.country_color = [0.6980 0.1333 0.2039];
         end
     case "South Korea"
         switch nturn_dates
@@ -149,12 +123,7 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["alpha","delta","omicron"];
                 fixed_params.dbeta = [1.6711 4.1445 6]; % US % fit parameters
-%                 fixed_params.VE1V = [0.49 0.3 .3];
-%                 fixed_params.VE2V = [0.94 0.88 .5];
-%                 fixed_params.VES1V = [0.8 0.65 .1];
-%                 fixed_params.VES2V = [0.8 0.65 .2];
                 
-%                 fixed_params.country_color = [0 0 0];
                 fixed_params.country_color = [0.0588 0.3922 0.8039];
         end
     case "Japan"
@@ -174,10 +143,6 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["alpha","delta","omicron"];
                 fixed_params.dbeta = [2 5.7845 11.8]; % US % fit parameters
-%                 fixed_params.VE1V = [0.49 0.6 0.3 .3];
-%                 fixed_params.VE2V = [0.94 0.84 0.88 .5];
-%                 fixed_params.VES1V = [0.8 0.5 0.65 .1];
-%                 fixed_params.VES2V = [0.8 0.5 0.65 .2];
                 
                 fixed_params.country_color = [0.7373 0 0.1765];
         end
@@ -197,10 +162,6 @@ switch char(fixed_params.location)
                 
                 fixed_params.var_names = ["beta","delta","omicron"];
                 fixed_params.dbeta = [2.4 4.6 19]; 
-%                 fixed_params.VE1V = [0.6 0.3 .3];
-%                 fixed_params.VE2V = [0.84 0.88 .5];
-%                 fixed_params.VES1V = [0.5 0.65 .1];
-%                 fixed_params.VES2V = [0.5 0.65 .2];
                 
                 fixed_params.country_color = [0.8706 0.2196 0.1922];
         end

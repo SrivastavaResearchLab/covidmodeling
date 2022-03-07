@@ -30,6 +30,11 @@ function disp_opts = create_figures(disp_opts)
         disp_opts.legend_fig = figure;
         disp_opts.legend_handle = legend('orientation','horizontal','box','off');
     end
+
+    if disp_opts.stacks_legend || disp_opts.all_figs
+        disp_opts.stackslegend_fig = figure;
+        disp_opts.stackslegend_handle = legend('orientation','vertical','box',1,'edgecolor',[1 1 1]);
+    end
     
     if disp_opts.combined_alpha || disp_opts.all_figs
         disp_opts.combined_alpha_fig = figure; hold on

@@ -27,16 +27,16 @@ fixed_params.calc_variants = 1;
 fixed_params.retrospective_study = 0;
 
 % set display options
-disp_opts.print_params = 0; disp_opts.fname="";
+disp_opts.print_params = 1; disp_opts.fname="";
 disp_opts.SVEIRD_plot = 0;
-disp_opts.stacks_plot = 0;
-disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
+disp_opts.stacks_plot = 1; disp_opts.stacks_legend = 1;
+disp_opts.plot_cases = 0; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;
 disp_opts.combined_cases = 0;
 disp_opts.combined_M = 0;
 disp_opts.combined_alpha = 0;
-disp_opts.check_variants = 1; % reported/predicted variants over time
+disp_opts.check_variants = 0; % reported/predicted variants over time
 
 disp_opts.variant_plot = 0; % variant proportions over time
 disp_opts.bgvar_sensitivity = 0; % RMSE as function of (beta,gamma)
@@ -62,7 +62,7 @@ var_names.US = "USA";
 td_list.US = 9;
 
 loc_list.IN = 'India';
-td_list.IN = 7;
+td_list.IN = 6;
 
 loc_list.DE = 'Germany';
 td_list.DE = 7;
@@ -85,7 +85,7 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-% fn = {'DE'}; %ZA,DE
+% fn = {'US'}; %ZA,DE
 fn = {'US','DE','IN','JP','ZA'}; %BR
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)

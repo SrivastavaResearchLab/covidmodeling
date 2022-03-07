@@ -3,7 +3,7 @@ function fixed_params = create_error_figure(fixed_params)
     US_data = fixed_params.US_data; start_day = fixed_params.start_day; 
     end_day = fixed_params.end_day;
     red = colors.red; gray = colors.gray; 
-    gold = colors.gold;
+    gold = colors.yellow;
     end_cases = min(end_day,length(US_data.date));
     
     n_vars = length(fixed_params.dbeta);

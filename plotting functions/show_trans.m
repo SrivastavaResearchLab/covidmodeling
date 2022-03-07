@@ -1,10 +1,10 @@
-function show_trans(US_data,start_day,param)
+function show_trans(US_data,start_day,param,fixed_params)
     h = findobj('LineWidth',1.6,'-or','LineWidth',1.9);
     delete(h)
     
     cfill1 = [1 1 1]; % stripe 1 color
-    cfill2 = [0.74 0.69 0.6]; % stripe 2 color
-    cstroke = [0.42 0.34 0.3];
+    cfill2 = fixed_params.colors.sand; % stripe 2 color
+    cstroke = fixed_params.colors.brown;
     stripe_counter = 1;
 
     for dt = 1:length(param.turn_dates)

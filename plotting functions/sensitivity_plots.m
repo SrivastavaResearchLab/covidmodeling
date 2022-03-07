@@ -1,6 +1,5 @@
 function sensitivity_plots(param, fixed_params, disp_opts)
     colors = fixed_params.colors;
-    gray = colors.gray; red = colors.red;
     US_data = fixed_params.US_data; N = fixed_params.N;
     start_day = fixed_params.start_day; end_day = fixed_params.end_day;
     
@@ -159,26 +158,31 @@ function sensitivity_plots(param, fixed_params, disp_opts)
         
         n_tests = 2; % number of sensitivity conditions in each direction
         
-        for v = ["alpha","delta"] % variant to do sensitivity on
+        for v = ["delta"] % variant to do sensitivity on
             sens_vi = find(fixed_params.var_names == v); % for indexing
         for p = ["dbeta","gamma","vdate"] % sensitivity parameter
+%         for p = ["kw"] % sensitivity parameter
 
         og_dbeta = fixed_params.dbeta;
         og_gamma_var = fixed_params.gamma_var;
         og_vdate = fixed_params.vdate;
+        og_kw = fixed_params.kw;
         
         fig = figure;
         for n = -n_tests:n_tests
             switch p
                 case "dbeta"
-                    fixed_params.dbeta(sens_vi) = og_dbeta(sens_vi)*(1+n*0.05);
+                    fixed_params.dbeta(sens_vi) = og_dbeta(sens_vi)*(1+n*0.2);
                     sgtitle("d\beta")
                 case "gamma"
                     fixed_params.gamma_var(sens_vi) = 1/(1/og_gamma_var(sens_vi) + n*4);
                     sgtitle("gamma_{" + v + "}","interpreter","latex")
                 case "vdate"
-                    fixed_params.vdate(sens_vi) = og_vdate(sens_vi) + n*10;
+                    fixed_params.vdate(sens_vi) = og_vdate(sens_vi) + n*14;
                     sgtitle(" transmission start date")
+                case "kw"
+                    fixed_params.kw(sens_vi) = og_kw(sens_vi) + max(n*.1,0);
+                    sgtitle(" relative reinfection rate")
             end
             
             frac = n/n_tests;

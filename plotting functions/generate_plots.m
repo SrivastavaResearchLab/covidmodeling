@@ -9,8 +9,9 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             disp_opts.combined_phi || disp_opts.all_figs
         
         colors = fixed_params.colors;
-        brown=colors.brown; red=colors.red; gray=colors.gray;
-        gold=colors.gold; black=colors.black;
+        grayL = colors.grayL; gray = colors.gray; grayD = colors.grayD;
+        brown = colors.brown; red = colors.red;
+        orange = colors.orange; yellow = colors.yellow; white = colors.white;
         country_color = fixed_params.country_color;
 
         US_data = fixed_params.US_data; N = fixed_params.N;
@@ -53,6 +54,8 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         [inflow,~] = calc_flows(t,y,param,fixed_params);
         new_cases = squeeze(sum(inflow(:,:,nI),2));
         new_cases = new_cases .* N;
+
+        total_immunity = calc_immunity(y,fixed_params);
         
         [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dt_daily);
 
@@ -75,11 +78,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         title(loc_name,'fontsize',55)
 
         bar(US_data.date(start_day:end_cases),US_data.cases(start_day:end_cases).*M_daily,...
-            'FaceColor',gray,'EdgeColor',gray,'DisplayName','Daily new cases')
+            'FaceColor',grayL,'EdgeColor',grayL,'DisplayName','Daily new cases')
         plot(US_data.date(start_day:end_cases),US_data.average(start_day:end_cases).*M_daily,...
-            '-.','Color',brown,'DisplayName','7-day average','LineWidth',8)
+            '-.','Color',grayD,'DisplayName','7-day average','LineWidth',8)
         plot(US_data.date(start_day:end_cases),US_data.average(start_day:end_cases),...
-            '-.','Color',gold,'DisplayName','7-day average','LineWidth',8)
+            '-.','Color',yellow,'DisplayName','7-day average','LineWidth',8)
         plot(dt,sum(new_cases,2),'-','Color',red,'DisplayName','Model Prediction',...
             'LineWidth',8)
         ylabel("Actual Cases")
@@ -89,7 +92,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
         title(loc_name);
         if disp_opts.show_trans
-            show_trans(US_data,start_day,param)
+            show_trans(US_data,start_day,param,fixed_params)
         end
         movegui('northwest')
         ytickformat('%.0f') % remove scientific notation
@@ -114,11 +117,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
         barv_daily = interp1(dt,barv,dt_daily);
         barf = bar(dt_daily,barv_daily,1,'stacked');
-        barf(1).FaceColor = gray/2; barf(1).DisplayName = "Fully Vaccinated, susceptible";
-        barf(2).FaceColor = gray; barf(2).DisplayName = "First dose, susceptible";
-        barf(3).FaceColor = brown; barf(3).DisplayName = "Unvaccinated, susceptible";
-        barf(4).FaceColor = gold; barf(4).DisplayName = "Recovered";
-        barf(5).FaceColor = black; barf(5).DisplayName = "Deceased";
+        barf(1).FaceColor = white; barf(1).DisplayName = "Fully Vaccinated, susceptible";
+        barf(2).FaceColor = yellow; barf(2).DisplayName = "First dose, susceptible";
+        barf(3).FaceColor = grayL; barf(3).DisplayName = "Unvaccinated, susceptible";
+        barf(4).FaceColor = orange; barf(4).DisplayName = "Recovered";
+        barf(5).FaceColor = grayD; barf(5).DisplayName = "Deceased";
         barf(6).FaceColor = red; barf(6).DisplayName = "Infected";
         axis tight; legend('location','EastOutside')
         title(loc_name)
@@ -131,7 +134,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     end
 
     if disp_opts.stacks_plot || disp_opts.all_figs
-        fig=figure;
+        fig=figure; hold on
         barv=[sum(y(:,nV1,:),3), ... % First dose
             sum(y(:,nVS1,:),3), ... % First dose, waning
             sum(y(:,nV2,:),3), ... % Fully vaccinated
@@ -142,15 +145,31 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
         barv_daily = interp1(dt,barv,dt_daily);
         barf = bar(dt_daily,barv_daily,1,'stacked');
-        barf(1).FaceColor = gray/2; barf(1).DisplayName = "First dose";
-        barf(2).FaceColor = gray; barf(2).DisplayName = "First dose, waning";
-        barf(3).FaceColor = gold; barf(3).DisplayName = "Fully vaccinated";
-        barf(4).FaceColor = (2+gold)/3; barf(4).DisplayName = "Fully vaccinated, waning";
-        barf(5).FaceColor = red; barf(5).DisplayName = "Unvaccinated";
-        barf(6).FaceColor = red/2; barf(6).DisplayName = "Unvaccinated, recovered";
-        barf(7).FaceColor = black; barf(7).DisplayName = "Unvaccinated, recovered, waning";
-        axis tight; legend('location','EastOutside')
+        barf(1).FaceColor = brown; barf(1).DisplayName = "First dose";
+        barf(2).FaceColor = red; barf(2).DisplayName = "First dose, waning";
+        barf(3).FaceColor = orange; barf(3).DisplayName = "Fully vaccinated";
+        barf(4).FaceColor = yellow; barf(4).DisplayName = "Fully vaccinated, waning";
+        barf(5).FaceColor = grayD; barf(5).DisplayName = "Unvaccinated";
+        barf(6).FaceColor = gray; barf(6).DisplayName = "Unvaccinated, recovered";
+        barf(7).FaceColor = grayL; barf(7).DisplayName = "Unvaccinated, recovered, waning";
+        axis tight;
         title(loc_name)
+
+        plot(dt,total_immunity,":","Color",white,"DisplayName","Population Immunity")
+
+        if disp_opts.stacks_legend || disp_opts.all_figs
+            figure(disp_opts.stackslegend_fig); hold on
+            barf = bar(dt_daily,barv_daily,1,'stacked');
+            barf(1).FaceColor = brown; barf(1).DisplayName = "First dose";
+            barf(2).FaceColor = red; barf(2).DisplayName = "First dose, waning";
+            barf(3).FaceColor = orange; barf(3).DisplayName = "Fully vaccinated";
+            barf(4).FaceColor = yellow; barf(4).DisplayName = "Fully vaccinated, waning";
+            barf(5).FaceColor = grayD; barf(5).DisplayName = "Unvaccinated";
+            barf(6).FaceColor = gray; barf(6).DisplayName = "Unvaccinated, recovered";
+            barf(7).FaceColor = grayL; barf(7).DisplayName = "Unvaccinated, recovered, waning";
+        else
+%             legend('location','EastOutside')
+        end
         
         if disp_opts.save_figs
             saveas(fig,"./png/stacks_" + string(loc_name) + ".png")
@@ -304,11 +323,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         barv=Ipl./sum(Ipl,2).*max(Ipl,[],'all');
         barv_daily = interp1(dt(start_var:end),barv,dt_daily);
         barf = bar(dt_daily,barv_daily,'stacked','BarWidth',1);
-        barf(1).FaceColor = gray; barf(1).HandleVisibility = 'off';
+        barf(1).FaceColor = grayL; barf(1).HandleVisibility = 'off';
         
         for i=1:(n_var+1)
             f = (n_var+1-i)/n_var;
-            barf(i).FaceColor = gray*f;
+            barf(i).FaceColor = grayL*f;
             barf(i).DisplayName = 'Infected ('+var_names(i)+')';
 %             barf(i+1).HandleVisibility = 'off';
             plot(dt(start_var:end),Ipl(:,i),'--','Color',red*f,'DisplayName','Infected ('+var_names(i)+')','LineWidth',8)
@@ -345,18 +364,17 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         
         sgtitle(loc_name,'FontSize',32)
         
-        variant_colors = [86 92 97 ; 
-            200 16 46 ; 134 38 51 ; 0 58 112 ; 50 240 100] ./ 255;
+        variant_colors = [gray ; red ; orange ; yellow ; brown];
         
         for var_i = 1:(n_var+1)
             subplot(1+n_var,1,var_i); hold on
             if var_i == 1 % original strain
                 bar(US_data.date(start_day:end_cases), ...
                     US_data.average(start_day:end_cases).*M_daily.*og_prop_daily, ...
-                    'FaceColor',(variant_colors(var_i,:) + 2)/3,'EdgeColor','none')
+                    'FaceColor',(variant_colors(var_i,:) + 1)/2,'EdgeColor','none')
             else
                 bar(t_weekly,variant_data.(var_names(var_i)).*newcases_weekly,1, ...
-                    'FaceColor',(variant_colors(var_i,:) + 2)/3,'EdgeColor','none')
+                    'FaceColor',(variant_colors(var_i,:) + 1)/2,'EdgeColor','none')
                 xline(fixed_params.vdate(var_i-1))
             end
 
@@ -456,10 +474,10 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         yw = reshape(yw,[size(yw,1),5,size(yw,2)/5]);
         V1_test = yw(:,nV1,nS); V1W_test = yw(:,nVS1,nS);
 
-        plot(tv,V1W_test,'r','DisplayName',"Waning")
-        plot(tv,V1_test,'k','DisplayName',"Immunized")
+        plot(tv,V1W_test,'color',red,'DisplayName',"Waning")
+        plot(tv,V1_test,'color',grayD,'DisplayName',"Immunized")
         plot(tv,V1_test./(V1_test+V1W_test),'--', 'DisplayName','Percent immunity', ...
-            'color',fixed_params.colors.gray)
+            'color',grayL)
 
         legend('location','eastoutside')
         
