@@ -38,43 +38,25 @@ if ~fixed_params.retrospective_study
     alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
     alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 else
-    boost_start_date = find(date_list > datetime(fixed_params.boost_start_date),1);
+    boost_start_date = find(alphaB_reported > 0, 1);
 
     % Set alpha for all reported data, interpolating between datapoints as 
     % necessary
-    alpha1 = interp1(date_list,alpha1_reported,dates);
-    alpha2 = interp1(date_list,alpha2_reported,dates);
-    alphaB = interp1(date_list,alphaB_reported,dates);
+    selected_dates = (dates <= date_list(arr_length)) & (dates >= date_list(1));
+    alpha1(selected_dates) = interp1(date_list,alpha1_reported,dates(selected_dates));
+    alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
+    alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 
     % Set alpha for dates after the beginning of vaccination, but before
     % the beginning of the booster
     selected_dates = (dates <= date_list(boost_start_date));
     total_doses = alpha1 + alpha2 + alphaB;
     
-    if alpha2 == 0
-        % Set alpha1 and alpha2
-        alpha1(selected_dates) = total_doses;
-        alpha2(selected_dates) = 0;
-        alphaB(selected_dates) = 0;
-    else
-        % Set alpha1 and alpha2
-        alpha1(selected_dates) = total_doses * (frac_alpha1/(frac_alpha1+frac_alpha2));
-        alpha2(selected_dates) = total_doses * (frac_alpha2/(frac_alpha1+frac_alpha2));
-        alphaB(selected_dates) = 0;
-    end
-
-    % Set alpha for dates after the beginning of the booster
-    selected_dates = (dates > date_list(boost_start_date));
-    
-    if alphaB == 0
-        alpha1(selected_dates) = total_doses * (frac_alpha1/(frac_alpha1+frac_alpha2));
-        alpha2(selected_dates) = total_doses * (frac_alpha2/(frac_alpha1+frac_alpha2));
-        alphaB(selected_dates) = 0;
-    else
-        alpha1(selected_dates) = total_doses * (frac_alpha1);
-        alpha2(selected_dates) = total_doses * (frac_alpha2);
-        alphaB(selected_dates) = total_doses * (frac_alphaB);
-    end
+    frac_alphaB(selected_dates) = 0;
+    total_frac = frac_alpha1 + frac_alpha2 + frac_alphaB;
+    alpha1 = total_doses * (frac_alpha1/total_frac);
+    alpha2 = total_doses * (frac_alpha2/total_frac);
+    alphaB = total_doses * (frac_alphaB/total_frac);
 end
 
 % convert to population fraction

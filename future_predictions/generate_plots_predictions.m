@@ -3,13 +3,13 @@ function disp_opts = generate_plots_predictions(param, fixed_params, disp_opts)
         end_offset = 3;
         start_offset = -596-51;
 
-%         alpha1_proportion = [0.5];
-%         alpha2_proportion = [0.5];
-%         alphaB_proportion = [0];
+        alpha1_proportion = [0.7];
+        alpha2_proportion = [0.3];
+        alphaB_proportion = [0];
 
-        alpha1_proportion = [0.2];
-        alpha2_proportion = [0.2];
-        alphaB_proportion = [0.6];
+%         alpha1_proportion = [0.2];
+%         alpha2_proportion = [0.2];
+%         alphaB_proportion = [0.6];
         
 %         alpha1_proportion = [0.3 0.5 0.7];
 %         alpha2_proportion = [0.7 0.5 0.3];
