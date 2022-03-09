@@ -336,9 +336,9 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax.FontSize = 45;
 
         if disp_opts.save_figs
-            saveas(gcf,"./png/fracalpha.png")
-            saveas(gcf,"./fig/fracalpha.fig")
-            saveas(gcf,"./eps/fracalpha.eps",'epsc')
+            saveas(gcf,"./png/fracalpha"+loc_name+".png")
+            saveas(gcf,"./fig/fracalpha"+loc_name+".fig")
+            saveas(gcf,"./eps/fracalpha"+loc_name+".eps",'epsc')
         end
     end
 
