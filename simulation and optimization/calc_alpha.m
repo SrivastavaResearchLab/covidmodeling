@@ -8,7 +8,7 @@ frac_alphaB = sens_vars.frac_alphaB;
 
 % DONT ALLOW S OR V1 TO GO BELOW ZERO FOR FUTURE PREDICTIONS (CHECK PLOTS)
 vacc_data = fixed_params.vacc_data;
-alpha_transition = fixed_params.alpha_transition;
+alpha_transition = sens_vars.alpha_transition; % Changed from: alpha_transition = fixed_params.alpha_transition
 
 date_list = vacc_data.date;
 alpha1_reported = vacc_data.alpha1_reported;
@@ -24,66 +24,58 @@ alpha1(date_list(1) > dates) = 0;
 alpha2(date_list(1) > dates) = 0;
 alphaB(date_list(1) > dates) = 0;
 
-% smoothly transition from last reported date to value for future
-% predictions (last reported data point * frac_alpha)
-%   _(alpha1)_
+arr_length = length(alpha1_reported); % Length of alpha1_reported, alpha2_reported, etc.
+
+% Picking array index to start applying frac_alpha1, frac_alpha2, etc.
+% Pick date for beginning of vaccination (e.g. 14-Dec-2020) if
+% retrospective study, if not then select last date of reported data
 if ~fixed_params.retrospective_study
-    y1 = alpha1_reported(end);
-    y2 = alpha1_reported(end)*frac_alpha1;
+    ind_selected = arr_length;
+    % Set alpha for all reported data, interpolating between datapoints as 
+    % necessary
+    selected_dates = (dates <= date_list(ind_selected)) & (dates >= date_list(1));
+    alpha1(selected_dates) = interp1(date_list,alpha1_reported,dates(selected_dates));
+    alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
+    alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 else
-    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
-    y1 = alpha1_reported(vacc_start_date);
-    y2 = alpha1_reported(vacc_start_date)*frac_alpha1;
+    boost_start_date = find(date_list > datetime(fixed_params.boost_start_date),1);
+
+    % Set alpha for all reported data, interpolating between datapoints as 
+    % necessary
+    alpha1 = interp1(date_list,alpha1_reported,dates);
+    alpha2 = interp1(date_list,alpha2_reported,dates);
+    alphaB = interp1(date_list,alphaB_reported,dates);
+
+    % Set alpha for dates after the beginning of vaccination, but before
+    % the beginning of the booster
+    selected_dates = (dates <= date_list(boost_start_date));
+    total_doses = alpha1 + alpha2 + alphaB;
+    
+    if alpha2 == 0
+        % Set alpha1 and alpha2
+        alpha1(selected_dates) = total_doses;
+        alpha2(selected_dates) = 0;
+        alphaB(selected_dates) = 0;
+    else
+        % Set alpha1 and alpha2
+        alpha1(selected_dates) = total_doses * (frac_alpha1/(frac_alpha1+frac_alpha2));
+        alpha2(selected_dates) = total_doses * (frac_alpha2/(frac_alpha1+frac_alpha2));
+        alphaB(selected_dates) = 0;
+    end
+
+    % Set alpha for dates after the beginning of the booster
+    selected_dates = (dates > date_list(boost_start_date));
+    
+    if alphaB == 0
+        alpha1(selected_dates) = total_doses * (frac_alpha1/(frac_alpha1+frac_alpha2));
+        alpha2(selected_dates) = total_doses * (frac_alpha2/(frac_alpha1+frac_alpha2));
+        alphaB(selected_dates) = 0;
+    else
+        alpha1(selected_dates) = total_doses * (frac_alpha1);
+        alpha2(selected_dates) = total_doses * (frac_alpha2);
+        alphaB(selected_dates) = total_doses * (frac_alphaB);
+    end
 end
-
-interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
-
-bool_interp = (date_list(end) < dates) & (date_list(end) + alpha_transition >= dates);
-alpha1(bool_interp) = interp_result(bool_interp);
-alpha1(date_list(end) + alpha_transition < dates) = alpha1_reported(end)*frac_alpha1;
-
-%   _(alpha2)_
-if ~fixed_params.retrospective_study
-    y1 = alpha2_reported(end);
-    y2 = alpha2_reported(end)*frac_alpha2;
-else
-    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
-    y1 = alpha2_reported(vacc_start_date);
-    y2 = alpha2_reported(vacc_start_date)*frac_alpha2;
-end
-
-
-% y1 = alpha2_reported(end);
-% y2 = alpha2_reported(end)*frac_alpha2;
-
-interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
-
-alpha2(bool_interp) = interp_result(bool_interp);
-alpha2(date_list(end) + alpha_transition < dates) = alpha2_reported(end)*frac_alpha2;
-
-%   _(alphaB)_
-if ~fixed_params.retrospective_study
-    y1 = alphaB_reported(end);
-    y2 = alphaB_reported(end)*frac_alphaB;
-else
-    vacc_start_date = find(date_list==datetime(fixed_params.vacc_start_date));
-    y1 = alphaB_reported(vacc_start_date);
-    y2 = alphaB_reported(vacc_start_date)*frac_alphaB;
-end
-
-% y1 = alphaB_reported(end);
-% y2 = alphaB_reported(end)*frac_alphaB;
-
-interp_result = cos_interp(y1,y2,(datenum(dates)-datenum(date_list(end)))/alpha_transition);
-
-alphaB(bool_interp) = interp_result(bool_interp);
-alphaB(date_list(end) + alpha_transition < dates) = alphaB_reported(end)*frac_alphaB;
-
-% interpolate data between the dates that data was reported
-selected_dates = (dates <= date_list(end)) & (dates >= date_list(1));
-alpha1(selected_dates) = interp1(date_list,alpha1_reported,dates(selected_dates));
-alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
-alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 
 % convert to population fraction
 alpha1 = alpha1/fixed_params.N;

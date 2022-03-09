@@ -34,6 +34,7 @@ sort_dates = reshape(sort_dates,[1 numel(sort_dates)]);
 sort_dates = [0 sort_dates T];
 
 %set ode solver options
+% DEFAULTS: reltol = 1e-6; maxstep = 1; abstol = 1e-6;
 reltol = 1e-6; maxstep = 1; abstol = 1e-6;
 options = odeset('RelTol',reltol,'AbsTol',abstol,'MaxStep',maxstep);
 
