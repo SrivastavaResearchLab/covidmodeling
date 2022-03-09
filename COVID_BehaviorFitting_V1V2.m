@@ -29,7 +29,7 @@ fixed_params.retrospective_study = 0;
 % set display options
 disp_opts.print_params = 1; disp_opts.fname="";
 disp_opts.SVEIRD_plot = 0;
-disp_opts.stacks_plot = 1; disp_opts.stacks_legend = 1;
+disp_opts.stacks_plot = 0; disp_opts.stacks_legend = 0;
 disp_opts.plot_cases = 0; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;
@@ -46,6 +46,7 @@ disp_opts.combined_phi = 0; % dbeta*VE for each variant/dosage
 disp_opts.combined_phi3d = 0; % dbeta*VE for each variant/dosage
 
 disp_opts.test_wane = 0; % test simulation with only vaccinations (no infections)
+disp_opts.frac_alpha = 1;
 
 disp_opts.legend = 0;
 disp_opts.all_figs = 0;
@@ -62,7 +63,7 @@ var_names.US = "USA";
 td_list.US = 9;
 
 loc_list.IN = 'India';
-td_list.IN = 6;
+td_list.IN = 7;
 
 loc_list.DE = 'Germany';
 td_list.DE = 7;

@@ -3,12 +3,12 @@ function [param,fixed_params] = saved_params(fixed_params, nturn_dates, param)
 switch char(fixed_params.location)
     case "India"
         switch nturn_dates
-            case 6
-                param.d1 = [58.5769, 7.07533, 72.261, 158.452, 352.52, 6300.54, 2612.63];
-                param.R0 = [1.68867];
-                param.turn_dates = [48.6426, 159.067, 204.131, 334.954, 449.768, 707.316];
-                param.t_trans = [70.7179, 16.1979, 55.878, 26.4168, 91.0241, 33.3104];
-                param.d2 = [0.610076];
+            case 7
+                param.d1 = [6.53365, 118.853, 76.1759, 289.702, 464.411, 9216.7, 518.772, 9981.95];
+                param.R0 = [1.75736];
+                param.turn_dates = [71.6537, 137.37, 197.68, 335.725, 454.021, 632.611, 698.436];
+                param.t_trans = [97.895, 10.3175, 99.1127, 11.2382, 97.8253, 66.0932, 48.5478];
+                param.d2 = [0.045227];
                 
 %                 fixed_params.Mmax = 130;
 %                 fixed_params.Mg = 15;
@@ -17,10 +17,10 @@ switch char(fixed_params.location)
 
                 fixed_params.dom_vacc = "AstraZeneca";
 %                 fixed_params.vdate = datetime(["December 29, 2020","February 17, 2021","October 5, 2020"]); first reported
-                fixed_params.vdate = datetime(["October 27, 2020","February 14, 2021","November 13, 2020","November 6, 2021"]);
+                fixed_params.vdate = datetime(["October 24, 2020","February 26, 2021","October 26, 2020","October 14, 2021"]);
                 
                 fixed_params.var_names = ["alpha","delta","kappa","omicron"];
-                fixed_params.dbeta = [2.1052 5.0006 2.2626 11.8772]; % IN
+                fixed_params.dbeta = [2.0284 5.5011 2.0738 11.7930]; % IN
                 
                 fixed_params.country_color = [1.0000 0.6000 0.2000];
 %                 fixed_params.country_color = [0.0706 0.5333 0.0275];

@@ -5,7 +5,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
             disp_opts.combined_cases || disp_opts.combined_M || ...
             disp_opts.combined_alpha || disp_opts.variant_plot || ...
             disp_opts.check_variants || disp_opts.legend || ...
-            disp_opts.stacks_plot || ...
+            disp_opts.stacks_plot || disp_opts.frac_alpha || ...
             disp_opts.combined_phi || disp_opts.all_figs
         
         colors = fixed_params.colors;
@@ -99,9 +99,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax = gca; ax.YAxis.Exponent = 0;
         
         if disp_opts.save_figs
-            saveas(fig,"./png/cases_" + string(loc_name) + ".png")
-            saveas(fig,"./fig/cases_" + string(loc_name) + ".fig")
-            saveas(fig,"./eps/cases_" + string(loc_name) + ".eps",'epsc')
+            for dir = ["./","./final figures/"]
+                saveas(fig,dir+"png/cases_" + string(loc_name) + ".png")
+                saveas(fig,dir+"fig/cases_" + string(loc_name) + ".fig")
+                saveas(fig,dir+"eps/cases_" + string(loc_name) + ".eps",'epsc')
+            end
         end
         
     end
@@ -172,9 +174,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         end
         
         if disp_opts.save_figs
-            saveas(fig,"./png/stacks_" + string(loc_name) + ".png")
-            saveas(fig,"./fig/stacks_" + string(loc_name) + ".fig")
-            saveas(fig,"./eps/stacks_" + string(loc_name) + ".eps",'epsc')
+            for dir = ["./","./final figures/"]
+                saveas(fig,dir+"png/stacks_" + string(loc_name) + ".png")
+                saveas(fig,dir+"fig/stacks_" + string(loc_name) + ".fig")
+                saveas(fig,dir+"eps/stacks_" + string(loc_name) + ".eps",'epsc')
+            end
         end
     end
 
@@ -315,6 +319,29 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         end
     end
 
+    if disp_opts.frac_alpha || disp_opts.all_figs
+        figure
+        frac_alpha1 = alpha1./(alpha1+alpha2+alphaB);
+        frac_alpha2 = alpha2./(alpha1+alpha2+alphaB);
+        frac_alphaB = alphaB./(alpha1+alpha2+alphaB);
+
+        hold on;
+        plot(dt_daily,100*frac_alpha1,'DisplayName',"First dose distribution")
+        plot(dt_daily,100*frac_alpha2,'DisplayName',"Second dose distribution")
+        plot(dt_daily,100*frac_alphaB,'DisplayName',"Booster distribution")
+        title(loc_name); legend
+        
+%         xl = xlim; xlim([datetime('December 1, 2020') xl(2)]);
+        ax = gca; ax.YRuler.Exponent = 0; ytickformat('percentage');
+        ax.FontSize = 45;
+
+        if disp_opts.save_figs
+            saveas(gcf,"./png/fracalpha.png")
+            saveas(gcf,"./fig/fracalpha.fig")
+            saveas(gcf,"./eps/fracalpha.eps",'epsc')
+        end
+    end
+
     if disp_opts.variant_plot || disp_opts.all_figs
         start_var = find(Iv(:,1),1,'first');
         
@@ -380,8 +407,10 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
 
             plot(dt,new_cases(:,var_i),':','Color',variant_colors(var_i,:),'LineWidth',8)
 
-            axis tight; xl = xlim; xlim([min(dt),xl(2)]); 
             ax=gca; ax.YRuler.Exponent = 0; % remove scientific notation
+            yt = yticks; set(gca,'YTick',[0 yt(end)])
+
+            axis tight; xl = xlim; xlim([min(dt),xl(2)]);
             yyaxis right; ylabel(var_names(var_i),'color',[0 0 0]) % label variants on right of plot (black text)
             set(gca,'YTickLabel',[])
 
@@ -390,9 +419,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         set(gca,'XTickLabel',xTick) % label only bottom subplot's xaxis
 
         if disp_opts.save_figs
-            saveas(fig_v,"./png/checkvariants_" + string(loc_name) + ".png")
-            saveas(fig_v,"./fig/checkvariants_" + string(loc_name) + ".fig")
-            saveas(fig_v,"./eps/checkvariants_" + string(loc_name) + ".eps",'epsc')
+            for dir = ["./","./final figures/"]
+                saveas(fig_v,dir+"png/checkvariants_" + string(loc_name) + ".png")
+                saveas(fig_v,dir+"fig/checkvariants_" + string(loc_name) + ".fig")
+                saveas(fig_v,dir+"eps/checkvariants_" + string(loc_name) + ".eps",'epsc')
+            end
         end
     end
     

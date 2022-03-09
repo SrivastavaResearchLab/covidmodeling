@@ -160,30 +160,33 @@ function sensitivity_plots(param, fixed_params, disp_opts)
         
         for v = ["delta"] % variant to do sensitivity on
             sens_vi = find(fixed_params.var_names == v); % for indexing
-        for p = ["dbeta","gamma","vdate"] % sensitivity parameter
-%         for p = ["kw"] % sensitivity parameter
+%         for p = ["dbeta","gamma","vdate","kw"] % sensitivity parameter
+        for p = ["kw"] % sensitivity parameter
 
         og_dbeta = fixed_params.dbeta;
         og_gamma_var = fixed_params.gamma_var;
         og_vdate = fixed_params.vdate;
         og_kw = fixed_params.kw;
+        kw_test = [0 0 og_kw(sens_vi) 0.5 1];
         
         fig = figure;
         for n = -n_tests:n_tests
             switch p
                 case "dbeta"
-                    fixed_params.dbeta(sens_vi) = og_dbeta(sens_vi)*(1+n*0.2);
-                    sgtitle("d\beta")
+                    fixed_params.dbeta(sens_vi) = og_dbeta(sens_vi)*(1-n*0.2);
+                    sgtitle("relative transmissibility",'fontsize',get(gca,'fontsize'))
                 case "gamma"
-                    fixed_params.gamma_var(sens_vi) = 1/(1/og_gamma_var(sens_vi) + n*4);
-                    sgtitle("gamma_{" + v + "}","interpreter","latex")
+                    fixed_params.gamma_var(sens_vi) = 1/(1/og_gamma_var(sens_vi) - n*4);
+                    sgtitle("infectious period",'fontsize',get(gca,'fontsize'))
                 case "vdate"
                     fixed_params.vdate(sens_vi) = og_vdate(sens_vi) + n*14;
-                    sgtitle(" transmission start date")
+                    sgtitle("transmission start date",'fontsize',get(gca,'fontsize'))
                 case "kw"
-                    fixed_params.kw(sens_vi) = og_kw(sens_vi) + max(n*.1,0);
-                    sgtitle(" relative reinfection rate")
+                    if n == -1 continue; end % skip second iteration
+                    fixed_params.kw(sens_vi) = kw_test(n+n_tests+1);
+                    sgtitle("relative reinfection rate",'fontsize',get(gca,'fontsize'))
             end
+            set(subplot(n_var+1,1,sens_vi+1),'Color',[0.96,0.91,0.56])
             
             frac = n/n_tests;
 
@@ -208,9 +211,8 @@ function sensitivity_plots(param, fixed_params, disp_opts)
             
             for var_i = 1:(n_var+1)
                 subplot(n_var+1,1,var_i); hold on
-                plot(dt,new_cases(:,var_i),'Color',col,'LineWidth',8*(2-abs(frac))/2);
+                plot(dt,new_cases(:,var_i),'-','Color',col,'LineWidth',8*(2-abs(frac))/2);
                 axis tight
-                ylabel(var_names(var_i));
                 
                 if var_i > 1
                     xline(fixed_params.vdate(var_i-1))
@@ -219,9 +221,17 @@ function sensitivity_plots(param, fixed_params, disp_opts)
                 if sens_vi == var_i-1
                     xline(fixed_params.vdate(sens_vi),'color',col)
                 end
+                
+                ax=gca; ax.YRuler.Exponent = 0; % remove scientific notation
+                yt = yticks; set(gca,'YTick',[0 yt(end)])
+
+                axis tight; xl = xlim; xlim([min(dt),xl(2)]);
+                yyaxis right; ylabel(var_names(var_i),'color',[0 0 0]) % label variants on right of plot (black text)
+                set(gca,'YTickLabel',[])
+
+                xTick = get(gca,'XTickLabel'); set(gca,'XTickLabel',[])
             end
-            
-            set(subplot(n_var+1,1,sens_vi+1),'Color',[0.96,0.91,0.56])
+            set(gca,'XTickLabel',xTick) % label only bottom subplot's xaxis
             
             drawnow
             
@@ -232,9 +242,13 @@ function sensitivity_plots(param, fixed_params, disp_opts)
         end
         
         if disp_opts.save_figs
-            saveas(fig,"./png/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".png")
-            saveas(fig,"./fig/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".fig")
-            saveas(fig,"./eps/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".eps",'epsc')
+            % to preserve background color
+            set(gcf,'InvertHardcopy','off');
+            for dir = ["./","./final figures/"]
+                saveas(fig,dir+"png/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".png")
+                saveas(fig,dir+"fig/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".fig")
+                saveas(fig,dir+"eps/" + p + "_sensitivitymin" + v + string(fixed_params.location) + ".eps",'epsc')
+            end
         end
         end
         end
