@@ -161,7 +161,7 @@ function sensitivity_plots(param, fixed_params, disp_opts)
         for v = ["delta"] % variant to do sensitivity on
             sens_vi = find(fixed_params.var_names == v); % for indexing
 %         for p = ["dbeta","gamma","vdate","kw"] % sensitivity parameter
-        for p = ["kw"] % sensitivity parameter
+        for p = ["dbeta","vdate"] % sensitivity parameter
 
         og_dbeta = fixed_params.dbeta;
         og_gamma_var = fixed_params.gamma_var;
@@ -214,11 +214,11 @@ function sensitivity_plots(param, fixed_params, disp_opts)
                 plot(dt,new_cases(:,var_i),'-','Color',col,'LineWidth',8*(2-abs(frac))/2);
                 axis tight
                 
-                if var_i > 1
+                if (var_i > 1) && (p == "vdate")
                     xline(fixed_params.vdate(var_i-1))
                 end
 
-                if sens_vi == var_i-1
+                if sens_vi == var_i-1 
                     xline(fixed_params.vdate(sens_vi),'color',col)
                 end
                 

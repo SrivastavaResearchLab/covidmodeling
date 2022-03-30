@@ -15,7 +15,9 @@ function disp_opts = create_figures(disp_opts)
     end
     
     if disp_opts.combined_M || disp_opts.all_figs
-        disp_opts.combined_M_fig = figure; hold on
+        fig = figure; hold on
+        fig.Position(3) = 1.5*fig.Position(3);
+        disp_opts.combined_M_fig = fig;
     end
     
     if disp_opts.combined_phi || disp_opts.all_figs
@@ -28,7 +30,7 @@ function disp_opts = create_figures(disp_opts)
     
     if disp_opts.legend || disp_opts.all_figs
         disp_opts.legend_fig = figure;
-        disp_opts.legend_handle = legend('orientation','horizontal','box','off');
+        disp_opts.legend_handle = legend('orientation','vertical','box','off');
     end
 
     if disp_opts.stacks_legend || disp_opts.all_figs

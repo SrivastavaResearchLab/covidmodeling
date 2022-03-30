@@ -91,12 +91,12 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         xlim([US_data.date(start_day) US_data.date(end_cases)]);
 
         title(loc_name);
+        ytickformat('%.0f') % remove scientific notation
+        ax = gca; ax.YAxis.Exponent = 0;
         if disp_opts.show_trans
             show_trans(US_data,start_day,param,fixed_params)
         end
         movegui('northwest')
-        ytickformat('%.0f') % remove scientific notation
-        ax = gca; ax.YAxis.Exponent = 0;
         
         if disp_opts.save_figs
             for dir = ["./","./final figures/"]
@@ -247,12 +247,12 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
     end
 
     if disp_opts.combined_M || disp_opts.all_figs
-        figure(disp_opts.combined_M_fig);
+        fig = figure(disp_opts.combined_M_fig);
 
         plot(dt,M,'DisplayName',loc_name,...
             'LineWidth',8,'Color',country_color)
         
-        set(gca,'yscale','log')
+%         set(gca,'yscale','log')
         
         axis tight
         yl = ylim; ylim([0 yl(2)]);
@@ -263,9 +263,11 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         ax.LineStyleOrderIndex = ax.ColorOrderIndex;
         
         if disp_opts.save_figs
-            saveas(disp_opts.combined_M_fig,"./png/combined_M.png")
-            saveas(disp_opts.combined_M_fig,"./fig/combined_M.fig")
-            saveas(disp_opts.combined_M_fig,"./eps/combined_M.eps",'epsc')
+            for dir = ["./","./final figures/"]
+            saveas(disp_opts.combined_M_fig,dir+"png/combined_M.png")
+            saveas(disp_opts.combined_M_fig,dir+"fig/combined_M.fig")
+            saveas(disp_opts.combined_M_fig,dir+"eps/combined_M.eps",'epsc')
+            end
         end
     end
 
@@ -329,7 +331,7 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         plot(dt_daily,100*frac_alpha1,'DisplayName',"First dose distribution")
         plot(dt_daily,100*frac_alpha2,'DisplayName',"Second dose distribution")
         plot(dt_daily,100*frac_alphaB,'DisplayName',"Booster distribution")
-        title(loc_name); legend
+        title(loc_name); legend; axis tight
         
 %         xl = xlim; xlim([datetime('December 1, 2020') xl(2)]);
         ax = gca; ax.YRuler.Exponent = 0; ytickformat('percentage');
@@ -504,6 +506,25 @@ function disp_opts = generate_plots(param, fixed_params, disp_opts)
         % reshape compartment array into matrix
         yw = reshape(yw,[size(yw,1),5,size(yw,2)/5]);
         V1_test = yw(:,nV1,nS); V1W_test = yw(:,nVS1,nS);
+
+        plot(tv,V1W_test,'color',red,'DisplayName',"Waning")
+        plot(tv,V1_test,'color',grayD,'DisplayName',"Immunized")
+        plot(tv,V1_test./(V1_test+V1W_test),'--', 'DisplayName','Percent immunity', ...
+            'color',grayL)
+
+        legend('location','eastoutside')
+        
+        if disp_opts.save_figs
+            saveas(fig,"./png/wane.png")
+            saveas(fig,"./fig/wane.fig")
+            saveas(fig,"./eps/wane.eps",'epsc')
+        end
+    end
+
+    if disp_opts.future_variants || disp_opts.all_figs
+        fig=figure; hold on
+        
+        sens_cases = future_sensitivity(t,y,param,fixed_params)
 
         plot(tv,V1W_test,'color',red,'DisplayName',"Waning")
         plot(tv,V1_test,'color',grayD,'DisplayName',"Immunized")

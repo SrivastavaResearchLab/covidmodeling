@@ -8,7 +8,6 @@ frac_alphaB = sens_vars.frac_alphaB;
 
 % DONT ALLOW S OR V1 TO GO BELOW ZERO FOR FUTURE PREDICTIONS (CHECK PLOTS)
 vacc_data = fixed_params.vacc_data;
-alpha_transition = sens_vars.alpha_transition; % Changed from: alpha_transition = fixed_params.alpha_transition
 
 date_list = vacc_data.date;
 alpha1_reported = vacc_data.alpha1_reported;
@@ -38,6 +37,8 @@ if ~fixed_params.retrospective_study
     alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
     alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 else
+    alpha_transition = sens_vars.alpha_transition; % Changed from: alpha_transition = fixed_params.alpha_transition
+    
     boost_start_date = find(alphaB_reported > 0, 1);
 
     % Set alpha for all reported data, interpolating between datapoints as 

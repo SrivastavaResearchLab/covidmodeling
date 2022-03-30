@@ -28,19 +28,35 @@ switch char(fixed_params.location)
     case "Germany"
         switch nturn_dates
             case 7
-                param.d1 = [146.845, 1977.07, 153.127, 180.2692, 261.762, 843.79, 10, 9e3];
-                param.R0 = [3.18799];
-                param.turn_dates = [25.1784, 207.593, 333.261, 382.942, 453.076, 571.448, 686.961];
-                param.t_trans = [46.6826, 84.8377, 51.1679, 29.721, 88.132, 39.266, 40.7622];
-                param.d2 = [0.353108];
+                param.d1 = [127.029, 2489.16, 169.456, 45.9369, 479.557, 1281.85, 15.4219, 9855.1];
+                param.R0 = [3.33509];
+                param.turn_dates = [21.7749, 198.251, 326.769, 389.625, 448.755, 583.824, 690.922];
+                param.t_trans = [39.6033, 84.3502, 54.9747, 27.2844, 89.345, 45.1422, 38.4702];
+                param.d2 = [0.361655];
 
                 fixed_params.Mmax = 10;
                 fixed_params.Mg = 10;
-                fixed_params.vdate = datetime(["October 7, 2020","May 4, 2021","November 24, 2021"]);
+                fixed_params.vdate = datetime(["September 30, 2020","April 19, 2021","November 22, 2021"]);
                 fixed_params.dom_vacc = "Pfizer";
                 
                 fixed_params.var_names = ["alpha","delta","omicron"];
-                fixed_params.dbeta = [1.5888 4.5 8.2]; % DE % fit parameters
+                fixed_params.dbeta = [1.6154 4.3348 8.6492]; % DE % fit parameters
+
+                fixed_params.country_color = [0 0 0];
+            case 8
+                param.d1 = [92.6118, 2129.44, 88.0118, 37.9949, 559.168, 1790.43, 69.2178, 74.3922, 9994.51];
+                param.R0 = [3.20631];
+                param.turn_dates = [18.1455, 202.523, 312.648, 405.483, 469.023, 582.219, 630.773, 711.982];
+                param.t_trans = [39.6324, 90.2502, 54.9892, 38.1603, 88.4064, 32.6576, 54.7539, 53.8115];
+                param.d2 = [0.361219];
+
+                fixed_params.Mmax = 10;
+                fixed_params.Mg = 10;
+                fixed_params.vdate = datetime(["October 14, 2020","March 24, 2021","October 20, 2021"]);
+                fixed_params.dom_vacc = "Pfizer";
+                
+                fixed_params.var_names = ["alpha","delta","omicron"];
+                fixed_params.dbeta = [1.67 5.07 9.07]; % DE % fit parameters
 
                 fixed_params.country_color = [0 0 0];
         end
