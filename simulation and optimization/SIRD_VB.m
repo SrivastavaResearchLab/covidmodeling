@@ -28,7 +28,7 @@ k = fixed_params.k; kw = fixed_params.kw;
 
 % calculate alpha(t)
 date = index2date(fixed_params.US_data,fixed_params.start_day,t);
-[alpha1,alpha2,alphaB] = calc_alpha(fixed_params,date);
+[alpha1,alpha2,alphaB] = calc_alpha(fixed_params,date,y);
 
 % VE(immunity #, variant #)
 % immunity #: unvaccinated, first dose, second dose, waning1, waning2

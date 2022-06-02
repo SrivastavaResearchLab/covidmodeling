@@ -20,23 +20,61 @@ new_data = 0;
 fixed_params.optimize_params = 0;
 
 %% Set Simulation Options
-disp_opts.sens_alpha_paired = 1; 
-disp_opts.stacked_bar = 1;
+disp_opts.sens_alpha_paired = 0;
+disp_opts.surface_alpha1_alpha2 = 1;
+disp_opts.surface_alphaB = 1;
+disp_opts.unvacc_vary = 0;
+
+disp_opts.stacked_bar = 0;
+
+disp_opts.all_figs = 0;
 %------------------------------
 fixed_params.retrospective_study = 1;
 fixed_params.vacc_start_date = "14-Dec-2020";
-fixed_params.boost_start_date = "13-Aug-2021";
+fixed_params.boost_start_date = "17-Aug-2021";
+fixed_params.unvacc_rate = 0.1;
 
-disp_opts.save_figs = 0;
+disp_opts.save_figs = 1;
 
 %% Creating figures for simulations
+if disp_opts.surface_alpha1_alpha2 || disp_opts.all_figs
+    disp_opts.surface_alpha1_alpha2_fig = figure;
+    figure1 = disp_opts.surface_alpha1_alpha2_fig;
+    
+%     disp_opts.surface_alpha1_alpha2_legend = legend;
+%     set(disp_opts.sens_alpha_paired_legend,'Interpreter','latex')
+%     set(disp_opts.sens_alpha_paired_legend,'Location','northwest')
+%     legend boxoff
+end
+
+if disp_opts.surface_alphaB || disp_opts.all_figs
+    disp_opts.surface_alphaB_fig = figure;
+    figure1 = disp_opts.surface_alphaB_fig;
+    
+%     disp_opts.surface_alpha1_alpha2_legend = legend;
+%     set(disp_opts.sens_alpha_paired_legend,'Interpreter','latex')
+%     set(disp_opts.sens_alpha_paired_legend,'Location','northwest')
+%     legend boxoff
+end
+
+if disp_opts.unvacc_vary || disp_opts.all_figs
+    disp_opts.unvacc_vary_fig = figure;
+    figure1 = disp_opts.unvacc_vary_fig;
+    
+%     disp_opts.surface_alpha1_alpha2_legend = legend;
+%     set(disp_opts.sens_alpha_paired_legend,'Interpreter','latex')
+%     set(disp_opts.sens_alpha_paired_legend,'Location','northwest')
+%     legend boxoff
+end
+
 if disp_opts.sens_alpha_paired || disp_opts.all_figs
     disp_opts.sens_alpha_paired_fig = figure;
     figure1 = disp_opts.sens_alpha_paired_fig;
     
     disp_opts.sens_alpha_paired_legend = legend;
     set(disp_opts.sens_alpha_paired_legend,'Interpreter','latex')
-    legend boxoff
+    set(disp_opts.sens_alpha_paired_legend,'Location','northwest')
+    set(disp_opts.sens_alpha_paired_legend,'EdgeColor','w')
 end
 
 %% Set Populations

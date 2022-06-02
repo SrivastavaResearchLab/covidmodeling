@@ -37,7 +37,7 @@ function [inflow,outflow] = calc_flows(t,yt,param,fixed_params)
         
         % calculate alpha(t)
         date = index2date(fixed_params.US_data,fixed_params.start_day,t(tidx));
-        [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,date);
+        [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,date,y);
         
         % VE(immunity #, variant #)
         % immunity #: unvaccinated, first dose, second dose, waning1, waning2

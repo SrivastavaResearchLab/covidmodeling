@@ -1,10 +1,4 @@
-function plot_basic(param,fixed_params,disp_opts,dispName,sens_name,...
-    sens_val)
-    
-    colors = fixed_params.colors;
-    grayL = colors.grayL; gray = colors.gray; grayD = colors.grayD;
-    brown = colors.brown; red = colors.red;
-    orange = colors.orange; yellow = colors.yellow; white = colors.white;
+function plot_basic(param,fixed_params,disp_opts,dispName)
 
     US_data = fixed_params.US_data; N = fixed_params.N;
     start_day = fixed_params.start_day; end_day = fixed_params.end_day;
@@ -45,29 +39,34 @@ function plot_basic(param,fixed_params,disp_opts,dispName,sens_name,...
     ytickformat("percentage")
     xlim([US_data.date(end_cases) + start_offset US_data.date(end_cases)+end_offset]);
 
-    xline(datetime(fixed_params.vacc_start_date),'HandleVisibility','off')
-    xline(datetime(fixed_params.boost_start_date),'HandleVisibility','off')
+    xline(datetime(fixed_params.vacc_start_date),...
+        'HandleVisibility','off','LineWidth',3,...
+        'Color',[0 0.4470 0.7410])
+    xline(datetime(fixed_params.boost_start_date),...
+        'HandleVisibility','off','LineWidth',3,...
+        'Color',[0.4660 0.6740 0.1880])
 
     if disp_opts.stacked_bar
-        figure;
-        barv=[sum(y(:,nV1,:),3), ... % First dose
-            sum(y(:,nVS1,:),3), ... % First dose, waning
-            sum(y(:,nV2,:),3), ... % Fully vaccinated
-            sum(y(:,nVS2,:),3), ... % Fully vaccinated, waning
-            y(:,nUV,nS), ... % Unvaccinated, susceptible
-            sum(y(:,nUV,[nI,nR]),3), ... % Unvaccinated, recovered
-            sum(y(:,nUV,nRW),3)]; % Unvaccinated, recovered, waning
-
-        barv_daily = interp1(dt,barv,dt_daily);
-        barf = bar(dt_daily,barv_daily,1,'stacked');
-        barf(1).FaceColor = brown; barf(1).DisplayName = "First dose";
-        barf(2).FaceColor = red; barf(2).DisplayName = "First dose, waning";
-        barf(3).FaceColor = orange; barf(3).DisplayName = "Fully vaccinated";
-        barf(4).FaceColor = yellow; barf(4).DisplayName = "Fully vaccinated, waning";
-        barf(5).FaceColor = grayD; barf(5).DisplayName = "Unvaccinated";
-        barf(6).FaceColor = gray; barf(6).DisplayName = "Unvaccinated, recovered";
-        barf(7).FaceColor = grayL; barf(7).DisplayName = "Unvaccinated, recovered, waning";
-        axis tight;
-        legend('Location','eastoutside');
+        plot_stacked_bar(fixed_params, disp_opts, y, t)
+%         figure;
+%         barv=[sum(y(:,nV1,:),3), ... % First dose
+%             sum(y(:,nVS1,:),3), ... % First dose, waning
+%             sum(y(:,nV2,:),3), ... % Fully vaccinated
+%             sum(y(:,nVS2,:),3), ... % Fully vaccinated, waning
+%             y(:,nUV,nS), ... % Unvaccinated, susceptible
+%             sum(y(:,nUV,[nI,nR]),3), ... % Unvaccinated, recovered
+%             sum(y(:,nUV,nRW),3)]; % Unvaccinated, recovered, waning
+% 
+%         barv_daily = interp1(dt,barv,dt_daily);
+%         barf = bar(dt_daily,barv_daily,1,'stacked');
+%         barf(1).FaceColor = brown; barf(1).DisplayName = "First dose";
+%         barf(2).FaceColor = red; barf(2).DisplayName = "First dose, waning";
+%         barf(3).FaceColor = orange; barf(3).DisplayName = "Fully vaccinated";
+%         barf(4).FaceColor = yellow; barf(4).DisplayName = "Fully vaccinated, waning";
+%         barf(5).FaceColor = grayD; barf(5).DisplayName = "Unvaccinated";
+%         barf(6).FaceColor = gray; barf(6).DisplayName = "Unvaccinated, recovered";
+%         barf(7).FaceColor = grayL; barf(7).DisplayName = "Unvaccinated, recovered, waning";
+%         axis tight;
+%         legend('Location','eastoutside');
     end
 end

@@ -1,7 +1,7 @@
 function plot_data_avg(fixed_params)
 end_offset = fixed_params.sens_plot_specs.end_offset;
 
-brown=fixed_params.brown;
+brown=fixed_params.colors.brown;
 
 US_data = fixed_params.US_data; N = fixed_params.N;
 start_day = fixed_params.start_day; end_day = fixed_params.end_day;

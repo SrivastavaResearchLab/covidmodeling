@@ -1,4 +1,9 @@
-function [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dates)
+function [alpha1,alpha2,alphaB] = calc_alpha(fixed_params,dates,y)
+arguments
+    fixed_params
+    dates
+    y = []
+end
 
 % define parameters to do sensitivity on
 sens_vars = fixed_params.sens_vars;
@@ -38,6 +43,11 @@ if ~fixed_params.retrospective_study
     alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
     alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
 else
+    % Define compartment indices
+    yix = fixed_params.yix;
+    nS = yix.nS; nD = yix.nD; nI = yix.nI; nR = yix.nR; nRW = yix.nRW;
+    nUV = yix.nUV; nV1 = yix.nV1; nV2 = yix.nV2; nVS1 = yix.nVS1; nVS2 = yix.nVS2;
+    
     boost_start_date = find(alphaB_reported > 0, 1);
 
     % Set alpha for all reported data, interpolating between datapoints as 
@@ -46,13 +56,32 @@ else
     alpha1(selected_dates) = interp1(date_list,alpha1_reported,dates(selected_dates));
     alpha2(selected_dates) = interp1(date_list,alpha2_reported,dates(selected_dates));
     alphaB(selected_dates) = interp1(date_list,alphaB_reported,dates(selected_dates));
-
+    
+    % Accounts for problems when certain doses haven't been started yet and
+    % they report NaN
+    alpha1(isnan(alpha1)) = 0;
+    alpha2(isnan(alpha2)) = 0;
+    alphaB(isnan(alphaB)) = 0;
+    
     % Set alpha for dates after the beginning of vaccination, but before
     % the beginning of the booster
-    selected_dates = (dates <= date_list(boost_start_date));
+    selected_dates = (dates < date_list(boost_start_date));
     total_doses = alpha1 + alpha2 + alphaB;
     
     frac_alphaB(selected_dates) = 0;
+    
+    % If there are no more suceptibles, set frac_alpha1 to 0
+%     if y(nUV,nS) < fixed_params.unvacc_rate
+%         frac_alpha1 = 0;
+%     end
+    if sum(y(nUV,:),1) < fixed_params.unvacc_rate
+        frac_alpha1 = 0;
+    end
+
+    if sum(y([nV1 nVS1],:),1) < fixed_params.unvacc_rate
+        frac_alpha2 = 0;
+    end
+
     total_frac = frac_alpha1 + frac_alpha2 + frac_alphaB;
     alpha1 = total_doses * (frac_alpha1/total_frac);
     alpha2 = total_doses * (frac_alpha2/total_frac);

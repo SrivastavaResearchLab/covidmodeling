@@ -35,7 +35,7 @@ sort_dates = [0 sort_dates T];
 
 %set ode solver options
 % DEFAULTS: reltol = 1e-6; maxstep = 1; abstol = 1e-6;
-reltol = 1e-6; maxstep = 1; abstol = 1e-6;
+reltol = 1e-7; maxstep = 1; abstol = 1e-7;
 options = odeset('RelTol',reltol,'AbsTol',abstol,'MaxStep',maxstep);
 
 for v = 1:(n_var+1) %one loop per strain in order of incidence
