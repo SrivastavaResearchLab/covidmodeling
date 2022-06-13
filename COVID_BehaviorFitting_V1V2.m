@@ -30,7 +30,7 @@ fixed_params.retrospective_study = 0;
 disp_opts.print_params = 1; disp_opts.fname="";
 disp_opts.SVEIRD_plot = 0;
 disp_opts.stacks_plot = 0; disp_opts.stacks_legend = 0;
-disp_opts.plot_cases = 0; disp_opts.show_trans = 1;
+disp_opts.plot_cases = 1; disp_opts.show_trans = 1;
 disp_opts.combined_beta = 0;
 disp_opts.combined_d1 = 0;
 disp_opts.combined_cases = 0;
@@ -46,7 +46,9 @@ disp_opts.combined_phi = 0; % dbeta*VE for each variant/dosage
 disp_opts.combined_phi3d = 0; % dbeta*VE for each variant/dosage
 
 disp_opts.test_wane = 0; % test simulation with only vaccinations (no infections)
-disp_opts.frac_alpha = 1;
+disp_opts.frac_alpha = 0;
+
+disp_opts.future_variants = 0;
 
 disp_opts.legend = 0;
 disp_opts.all_figs = 0;
@@ -66,7 +68,7 @@ loc_list.IN = 'India';
 td_list.IN = 7;
 
 loc_list.DE = 'Germany';
-td_list.DE = 7;
+td_list.DE = 8;
 
 loc_list.CA = 'Canada';
 td_list.CA = 6;
@@ -86,8 +88,8 @@ loc_list.ZA = 'South Africa';
 td_list.ZA = 5;
 
 % fn = fieldnames(loc_list);
-% fn = {'US'}; %ZA,DE
-fn = {'US','DE','IN','JP','ZA'}; %BR
+fn = {'DE'}; %ZA,DE
+% fn = {'US','DE','IN','JP','ZA'}; %BR
 disp_opts.all_countries = string(cell2mat(fn'))';
 for k = 1:length(fn)
 
@@ -145,6 +147,8 @@ end
 fixed_params = set_sens_vars(fixed_params);
 
 [param,fixed_params] = set_params(fixed_params, var_data);
+
+fixed_params = set_sens_vars(fixed_params);
 
 print_params(param, fixed_params, disp_opts)
 

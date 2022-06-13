@@ -20,9 +20,11 @@ if disp_opts.legend || disp_opts.all_figs
     disp_opts.legend_fig.InnerPosition = [1, 1, legLocPixels(3) + 150, ...
         legLocPixels(4) + 12 * boxLineWidth];
     
-    saveas(disp_opts.legend_fig,'./png/legend.png');
-    saveas(disp_opts.legend_fig,'./fig/legend.fig');
-    saveas(disp_opts.legend_fig,'./eps/legend.eps','epsc');
+    for dir = ["./","./final figures/"]
+    saveas(disp_opts.legend_fig,dir+"png/legend.png");
+    saveas(disp_opts.legend_fig,dir+"fig/legend.fig");
+    saveas(disp_opts.legend_fig,dir+"eps/legend.eps",'epsc');
+    end
 end
 
 if disp_opts.stacks_legend || disp_opts.all_figs
@@ -46,8 +48,10 @@ if disp_opts.stacks_legend || disp_opts.all_figs
     disp_opts.stackslegend_fig.InnerPosition = [1, 1, legLocPixels(3) + 150, ...
         legLocPixels(4) + 12 * boxLineWidth];
     
-    saveas(disp_opts.stackslegend_fig,'./png/stackslegend.png');
-    saveas(disp_opts.stackslegend_fig,'./fig/stackslegend.fig');
-    saveas(disp_opts.stackslegend_fig,'./eps/stackslegend.eps','epsc');
+    for dir = ["./","./final figures/"]
+    saveas(disp_opts.stackslegend_fig,dir+"png/stackslegend.png");
+    saveas(disp_opts.stackslegend_fig,dir+"fig/stackslegend.fig");
+    saveas(disp_opts.stackslegend_fig,dir+"eps/stackslegend.eps",'epsc');
+    end
 end
 end
